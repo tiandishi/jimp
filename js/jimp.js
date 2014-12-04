@@ -45,7 +45,6 @@ jimp.controller('gray_img_ctl', function ($scope, $location) {
         var imgToGray = new imageToGray(iCanvas, "images/1.jpg");
         imgToGray.render();
     };
-
 });
 
 jimp.controller('img_to_gray', function () {
