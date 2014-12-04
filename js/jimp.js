@@ -36,17 +36,16 @@ jimp.controller('file_manage_ctl', function ($scope, $location) {
         }
     };
 
-    
+
 });
 
 jimp.controller('gray_img_ctl', function ($scope, $location) {
-        $scope.img_to_gray = function () {
-       // alert("fsfd");
+    $scope.img_to_gray = function () {
         var iCanvas = document.getElementById("grayImage");
         var imgToGray = new imageToGray(iCanvas, "images/1.jpg");
         imgToGray.render();
     };
-    
+
 });
 
 jimp.controller('img_to_gray', function () {
