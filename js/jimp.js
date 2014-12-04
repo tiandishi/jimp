@@ -35,18 +35,18 @@ jimp.controller('file_manage_ctl', function ($scope, $location) {
         } catch (e) {
         }
     };
-
-
 });
 
 jimp.controller('gray_img_ctl', function ($scope, $location) {
     $scope.img_to_gray = function () {
         var iCanvas = document.getElementById("grayImage");
-        var imgToGray = new imageToGray(iCanvas, "images/1.jpg");
-        imgToGray.render();
+        var imgMat1 = new get_img_mat(iCanvas, "images/1.jpg");
+        imgMat1.get_mat();
+       // amt_to_gray(imgMat);
+    };
+    $scope.test_ll = function(){
+         test_it();
     };
 });
-
 jimp.controller('img_to_gray', function () {
-
 });
