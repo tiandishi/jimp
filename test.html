@@ -9,19 +9,20 @@
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="css/main.css">
     </head>
-    <body ng-app="jimp">
+    <body ng-app="page2">
         <div class="container">
-            <div class="row">
+            <div class="row" ng-controller="NavbarCtrl">
                 <nav class="navbar navbar-default" role="navigation">
                     <div class="navbar-header">
                         <a class="navbar-brand" href="index.html">jimp</a>
                     </div>
                     <div class="collapse navbar-collapse navbar-ex1-collapse">
                         <ul class="nav navbar-nav">
-                            <li class="dropdown" ng-controller="file_manage_ctl">
+                            <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">文件<b class="caret"></b></a>
+
                                 <ul class="dropdown-menu menu-top">
-                                    <li><a ng-click="file_open()">打开文件</a></li>
+                                    <li><a><button ng-click="file_open()">打开文件</a></li>
                                     <li><a href="/dropdown/label2">保存文件</a></li>
                                     <li class="divider"></li>
                                     <li><a href="/dropdown/label4">清除屏幕</a></li>
@@ -29,11 +30,11 @@
                                     <li><a href="/dropdown/label5">其他</a></li>
                                 </ul>
                             </li>
-                            <li class="dropdown" ng-controller="gray_img_ctl">
+                            <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">灰度处理<b class="caret"></b></a>
 
                                 <ul class="dropdown-menu menu-top">
-                                    <li ng-click="img_to_gray()"><a>生成灰度图</a></li>
+                                    <li><a href="/dropdown/label1">生成灰度图</a></li>
                                     <li><a href="/dropdown/label2">生成直方图</a></li>
 
                                     <li class="divider"></li>
@@ -101,13 +102,25 @@
 
 
 
-        <script src="js/jimp1.js"></script>
+        <script src="js/jimp.js"></script>
+        <script>
+                                        var iCanvas = document.getElementById("grayImage");
+                                        var imgToGray = new imageToGray(iCanvas, "images/1.jpg");
+                                        imgToGray.render();
+        </script>
         <script src="/bower_components/jquery/dist/jquery.min.js"></script>
-        <script src="js/angular.min.js"></script>
+        <script src="/bower_components/angular/angular.min.js"></script>
         <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="/bower_components/angular-route/angular-route.min.js"></script>
         <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-        <script src="/js/jimp.js"></script>
+        <script>
+            function NavbarCtrl($scope){
+                $scope.open_file=function(){
+                    alert("shishi");
+                }
+            }
+        </script>>
+        <script src="/js/app.js"></script>
 
     </body>
 </html>
