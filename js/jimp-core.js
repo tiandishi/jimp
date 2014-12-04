@@ -13,7 +13,7 @@
 
 
 //彩图转灰白  src->dst
-    function cvtColor(_src) {
+    function cvtColor(_src,max) {
         if (_src.type && _src.type === "CV_RGBA") {
             var row = _src.row,
                     col = _src.col;
@@ -22,7 +22,12 @@
                     data2 = _src.data;
             var pix1, pix2, pix = _src.row * _src.col * 4;
             while (pix) {
-                data[pix -= 4] = data[pix1 = pix + 1] = data[pix2 = pix + 2] = (data2[pix] * 299 + data2[pix1] * 587 + data2[pix2] * 114) / 1000;
+                pix -= 4,pix1 = pix + 1,pix2 = pix + 2;
+                
+                var aa=(data2[pix] * 299 + data2[pix1] * 587 + data2[pix2] * 114) /1000;
+                var bb=Math.round(aa/max);
+                bb=bb*max;
+                data[pix] = data[pix1] = data[pix2] = bb;
                 data[pix + 3] = data2[pix + 3];
             }
         } else {
@@ -86,7 +91,22 @@
                  _this.iCtx.putImageData(newIamgeData, 0, 0);
             };
             img.src = this.url;
+        },
+        
+        img_to_gray_in_max: function (max) {
+            var img = new Image();
+            var _this = this;
+            img.onload = function () {
+                var myMat = _this.imread(img);
+                //return myMat;
+                var aa=256/max;
+                 var newImage = cvtColor(myMat,aa);
+                 var newIamgeData = _this.RGBA2ImageData(newImage);
+                 _this.iCtx.putImageData(newIamgeData, 0, 0);
+            };
+            img.src = this.url;
         }
+        
     };
     window.test_it = test_it;
     window.get_img_mat = get_img_mat;

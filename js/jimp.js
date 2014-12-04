@@ -41,7 +41,7 @@ jimp.controller('gray_img_ctl', function ($scope, $location) {
     $scope.img_to_gray = function () {
         var iCanvas = document.getElementById("grayImage");
         var imgMat1 = new get_img_mat(iCanvas, "images/1.jpg");
-        imgMat1.get_mat();
+        imgMat1.img_to_gray_in_max(16);
        // amt_to_gray(imgMat);
     };
     $scope.test_ll = function(){
