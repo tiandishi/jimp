@@ -50,3 +50,13 @@ jimp.controller('gray_img_ctl', function ($scope, $location) {
 });
 jimp.controller('img_to_gray', function () {
 });
+
+
+jimp.controller('huijiechange', function ($scope, $location) {
+    $scope.gbhj=function(){
+        var aa=$scope.huijie;
+        var iCanvas = document.getElementById("grayImage");
+        var imgMat1 = new get_img_mat(iCanvas, "images/1.jpg");
+        imgMat1.img_to_gray_in_max(aa);
+    }
+});
