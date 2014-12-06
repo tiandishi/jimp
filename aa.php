@@ -109,6 +109,9 @@
                 </div>
             </div>
         </div>
+        <?php 
+        echo '是否支持php';
+        ?>
         <!--Step:1 Prepare a dom for ECharts which (must) has size (width & hight)-->
         <!--Step:1 为ECharts准备一个具备大小（宽高）的Dom-->
         <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
