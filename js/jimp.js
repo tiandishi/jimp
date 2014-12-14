@@ -100,6 +100,24 @@ jimp.service('imgdata', ['$rootScope', function ($rootScope) {
                     service.data.zftdata[bb]++;
                 }
                 return dst;
+            },
+            //获取位平面二值图矩阵
+            get_bit_mat: function (i) {
+                var row = service.data.gray_mat.row,
+                        col = service.data.gray_mat.col;
+                var dst = new service.Mat(row, col);
+                var data = dst.data,
+                        data2 = service.data.gray_mat.data;
+                var pix1, pix2, pix = service.data.gray_mat.row * service.data.gray_mat.col * 4;
+                while (pix) {
+                    pix -= 4, pix1 = pix + 1, pix2 = pix + 2;
+                    var aa = data2[pix];
+                    var tmp = 1 << i;
+                    var bb = aa & tmp;
+                    data[pix] = data[pix1] = data[pix2] = bb;
+                    data[pix + 3] = data2[pix + 3];
+                }
+                return dst;
             }
         }
         return service;
@@ -150,10 +168,8 @@ jimp.controller('huijiechange', ['$scope', 'imgdata', function ($scope, imgdata)
         $scope.gbhj = function () {
             var tmphj = $scope.huijie;
             var dstMat = imgdata.changehuijie(tmphj);
-
             var immgg = imgdata.RGBA2ImageData(dstMat);
             imgdata.data.grayCtx.putImageData(immgg, 0, 0);
-
             sczft();
         }
         function sczft() {
@@ -236,6 +252,15 @@ jimp.controller('huijiechange', ['$scope', 'imgdata', function ($scope, imgdata)
         ;
     }]);
 
-jimp.controller('hualine', ['$scope', 'imgdata', function ($scope, imgdata) {
-       
+jimp.controller('erzhitu', ['$scope', 'imgdata', function ($scope, imgdata) {
+         var ezCanvas = document.getElementById("bitImage");
+         var ezCtx = ezCanvas.getContext("2d");
+         
+        $scope.scezt=function(){
+            var bitvalue=$scope.bitvalue;
+            alert(bitvalue);
+            var dstMat = imgdata.get_bit_mat(bitvalue-1);
+            var immgg = imgdata.RGBA2ImageData(dstMat);
+            ezCtx.putImageData(immgg, 0, 0);
+        }
     }]);
