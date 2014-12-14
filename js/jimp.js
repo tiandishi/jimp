@@ -114,9 +114,9 @@ jimp.service('imgdata', ['$rootScope', function ($rootScope) {
                     var aa = data2[pix];
                     var tmp = 1 << i;
                     var bb = aa & tmp;
-                    if(bb>0)
+                    if (bb > 0)
                     {
-                        bb=255;
+                        bb = 255;
                     }
                     data[pix] = data[pix1] = data[pix2] = bb;
                     data[pix + 3] = data2[pix + 3];
@@ -212,6 +212,10 @@ jimp.controller('huijiechange', ['$scope', 'imgdata', function ($scope, imgdata)
                         //--- 折柱 ---
                         var myChart = ec.init(document.getElementById('main'));
                         myChart.setOption({
+                            title: {
+                                text: '灰度直方图',
+                                subtext: '图片'
+                            },
                             tooltip: {
                                 trigger: 'axis'
                             },
@@ -237,31 +241,40 @@ jimp.controller('huijiechange', ['$scope', 'imgdata', function ($scope, imgdata)
                             ],
                             yAxis: [
                                 {
-                                    type: 'value',
-                                    splitArea: {show: true}
+                                    type: 'value'
                                 }
                             ],
                             series: [
                                 {
                                     name: '像素个数',
                                     type: 'bar',
-                                    data: data2
+                                    data: data2,
+                                    markPoint: {
+                                        data: [
+                                            {type: 'max', name: '最大值'},
+                                            {type: 'min', name: '最小值'}
+                                        ]
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ]
+                                    }
                                 }
                             ]
                         });
                     }
             );
         }
-
         ;
     }]);
 
 jimp.controller('erzhitu', ['$scope', 'imgdata', function ($scope, imgdata) {
-         var ezCanvas = document.getElementById("bitImage");
-         var ezCtx = ezCanvas.getContext("2d");   
-        $scope.scezt=function(){
-            var bitvalue=$scope.bitvalue;
-            var dstMat = imgdata.get_bit_mat(bitvalue-1);
+        var ezCanvas = document.getElementById("bitImage");
+        var ezCtx = ezCanvas.getContext("2d");
+        $scope.scezt = function () {
+            var bitvalue = $scope.bitvalue;
+            var dstMat = imgdata.get_bit_mat(bitvalue - 1);
             var immgg = imgdata.RGBA2ImageData(dstMat);
             ezCtx.putImageData(immgg, 0, 0);
         }
