@@ -114,6 +114,10 @@ jimp.service('imgdata', ['$rootScope', function ($rootScope) {
                     var aa = data2[pix];
                     var tmp = 1 << i;
                     var bb = aa & tmp;
+                    if(bb>0)
+                    {
+                        bb=255;
+                    }
                     data[pix] = data[pix1] = data[pix2] = bb;
                     data[pix + 3] = data2[pix + 3];
                 }
