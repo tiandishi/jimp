@@ -105,13 +105,17 @@
                 </div>
                 <div class="col-md-6" style="background-color: #00b3ee" ng-controller="huijiechange">
                     <input type=range min=1 max=255 value=1 ng-model="huijie" ng-change="gbhj()"  >
-                    {{huijie||1}}
+                    {{255-huijie||1}}
                 </div>
             </div>
         </div>
         <!--Step:1 Prepare a dom for ECharts which (must) has size (width & hight)-->
         <!--Step:1 为ECharts准备一个具备大小（宽高）的Dom-->
-        <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;" ng-controller="hualine"></div>
+        <div  ng-controller="hualine">
+        <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;">
+        </div>
+            <input type=button value="生成直方图" ng-click="sczft()" >
+        </div>
        
         <!--Step:2 Import echarts.js-->
         <!--Step:2 引入echarts.js-->

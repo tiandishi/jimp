@@ -2,11 +2,112 @@
 
 var jimp = angular.module('jimp', ['ui.bootstrap', 'ngRoute']);
 
+jimp.service('imgdata', ['$rootScope', function ($rootScope) {
+        var service = {
+            data:
+                    {img_mat: null, gray_mat: null, grayCanvas: null, grayCtx: null, zftdata: new Array(255)}
+            ,
+            img_load: function () {
+                $rootScope.$broadcast('data.update');
+            },
+            Mat: function (__row, __col, __data, __buffer) {
+                this.row = __row || 0;
+                this.col = __col || 0;
+                this.channel = 4;
+                this.buffer = __buffer || new ArrayBuffer(__row * __col * 4);
+                this.data = new Uint8ClampedArray(this.buffer);
+                __data && this.data.set(__data);
+                this.bytes = 1;
+                this.type = "CV_RGBA";
+            },
+            imread: function (__image) {
+                var width = __image.width,
+                        height = __image.height;
+                service.iResize(width, height);
+
+                service.data.grayCtx.drawImage(__image, 0, 0);
+                var imageData = service.data.grayCtx.getImageData(0, 0, width, height),
+                        tempMat = new service.Mat(height, width, imageData.data);
+                imageData = null;
+                service.data.grayCtx.clearRect(0, 0, width, height);
+                service.data.img_mat = tempMat;
+                return tempMat;
+            },
+//  调用以上方法可以得到图形矩阵
+
+            iResize: function (__width, __height) {
+                service.data.grayCanvas.width = __width;
+                service.data.grayCanvas.height = __height;
+            },
+            RGBA2ImageData: function (__imgMat) {
+                var width = __imgMat.col,
+                        height = __imgMat.row,
+                        imageData = service.data.grayCtx.createImageData(width, height);
+                imageData.data.set(__imgMat.data);
+                return imageData;
+            },
+            cvtColor: function (__src) {
+                if (__src.type && __src.type === "CV_RGBA") {
+                    var row = __src.row,
+                            col = __src.col;
+                    var dst = new service.Mat(row, col);
+                    var data = dst.data,
+                            data2 = __src.data;
+                    var pix1, pix2, pix = __src.row * __src.col * 4;
+                    while (pix) {
+                        data[pix -= 4] = data[pix1 = pix + 1] = data[pix2 = pix + 2] = (data2[pix] * 299 + data2[pix1] * 587 + data2[pix2] * 114) / 1000;
+                        data[pix + 3] = data2[pix + 3];
+                    }
+                } else {
+                    return src;
+                }
+                service.data.gray_mat = dst;
+                return dst;
+            },
+            init_img: function () {
+                service.data.grayCanvas = document.getElementById("grayImage");
+                service.data.grayCtx = service.data.grayCanvas.getContext("2d");
+
+                var img = new Image();
+                img.onload = function () {
+                    var myMat = service.imread(img);
+                    var dstMat = service.cvtColor(myMat);
+                    var immgg = service.RGBA2ImageData(dstMat);
+                    service.data.grayCtx.putImageData(immgg, 0, 0);
+                };
+                img.src = "images/1.jpg";
+            },
+            //改变灰阶
+            changehuijie: function (max) {
+                var i = 0;
+                for (; i < 256; i++)
+                {
+                    service.data.zftdata[i] = 0;
+                }
+                var row = service.data.gray_mat.row,
+                        col = service.data.gray_mat.col;
+                var dst = new service.Mat(row, col);
+                var data = dst.data,
+                        data2 = service.data.gray_mat.data;
+                var pix1, pix2, pix = service.data.gray_mat.row * service.data.gray_mat.col * 4;
+                while (pix) {
+                    pix -= 4, pix1 = pix + 1, pix2 = pix + 2;
+                    var aa = data2[pix];
+                    var bb = Math.round(aa / max);
+                    bb = bb * max;
+                    data[pix] = data[pix1] = data[pix2] = bb;
+                    data[pix + 3] = data2[pix + 3];
+                    service.data.zftdata[bb]++;
+                }
+                return dst;
+            }
+        }
+        return service;
+    }]);
+
 jimp.config(['$routeProvider', '$locationProvider', '$sceProvider', function ($routeProvider, $locationProvider, $sceProvider) {
         $routeProvider
                 .when('/', {controller: 'DemoCtrl'})
-                .when('/abc', {controller: 'DemoCtrl'})
-                .when('/123', {controller: 'DemoCtrl'})
                 .otherwise({redirectTo: '/'});
         $locationProvider.html5Mode(true);
     }]);
@@ -38,89 +139,110 @@ jimp.controller('file_manage_ctl', function ($scope, $location) {
     };
 });
 
-jimp.controller('gray_img_ctl', function ($scope, $location) {
+jimp.controller('gray_img_ctl', ['$scope', 'imgdata', function ($scope, imgdata) {
+        //  alert("1asdf");
+        $scope.img_to_gray = function () {
+            imgdata.init_img();
+        };
+    }]);
 
-    $scope.img_to_gray = function () {
-        var iCanvas = document.getElementById("grayImage");
-        var imgMat1 = new get_img_mat(iCanvas, "images/1.jpg");
-        imgMat1.img_to_gray_in_max(16);
-        // amt_to_gray(imgMat);
-    };
-    $scope.test_ll = function () {
-        test_it();
-    };
-});
-jimp.controller('img_to_gray', function () {
-});
+jimp.controller('huijiechange', ['$scope', 'imgdata', function ($scope, imgdata) {
+        $scope.gbhj = function () {
+            var tmphj = $scope.huijie;
+            var dstMat = imgdata.changehuijie(tmphj);
 
-
-jimp.controller('huijiechange', function ($scope, $location) {
-    $scope.gbhj = function () {
-        //alert("sdfsd");
-        var aa = $scope.huijie;
-        var iCanvas = document.getElementById("grayImage");
-        var imgMat1 = new get_img_mat(iCanvas, "images/1.jpg");
-        imgMat1.img_to_gray_in_max(aa);
-    }
-});
-
-jimp.controller('hualine', function ($scope, $location) {
-    $scope.linedata=0;
-    require.config({
-        paths: {
-            echarts: 'js'
+            var immgg = imgdata.RGBA2ImageData(dstMat);
+            imgdata.data.grayCtx.putImageData(immgg, 0, 0);
         }
-    });
+    }]);
 
+jimp.controller('hualine', ['$scope', 'imgdata', function ($scope, imgdata) {
+        require.config({
+            paths: {
+                echarts: 'js'
+            }
+        });
+        
+        
+        $scope.linedata = 0;
+        $scope.sczft = function () {
+           // var ttdata = [3, 3, 3, 3, 5.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3];
+            var tmpdata = imgdata.data.zftdata;
+        var data1 = new Array();
+        var data2 = new Array();
+        
+        var i=0;
+        for(i=0;i<256;i++){
+            if(tmpdata[i]>0)
+            {
+                var ss="\'"+i+"\'"
+                data1.push(ss);
+                data2.push(tmpdata[i]);
+            }
+        }
 // Step:4 require echarts and use it in the callback.
 // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
-    require(
-            [
-                'echarts',
-                'echarts/chart/bar',
-                'echarts/chart/line'
-            ],
-            function (ec) {
-                //--- 折柱 ---
-                var myChart = ec.init(document.getElementById('main'));
-                myChart.setOption({
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        data: ['蒸发量']
-                    },
-                    toolbox: {
-                        show: true,
-                        feature: {
-                            mark: {show: true},
-                            dataView: {show: true, readOnly: false},
-                            magicType: {show: true, type: ['line', 'bar']},
-                            restore: {show: true},
-                            saveAsImage: {show: true}
-                        }
-                    },
-                    calculable: true,
-                    xAxis: [
-                        {
-                            type: 'category',
-                            data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-                        }
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/bar',
+                        'echarts/chart/line'
                     ],
-                    yAxis: [
-                        {
-                            type: 'value',
-                            splitArea: {show: true}
-                        }
-                    ],
-                    series: [
-                        {
-                            name: '蒸发量',
-                            type: 'bar',
-                            data: [3, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
-                        }
-                    ]
-                });
-            }
-    );
-});
+                    function (ec) {
+                        //--- 折柱 ---
+                        var myChart = ec.init(document.getElementById('main'));
+                        myChart.setOption({
+                            tooltip: {
+                                trigger: 'axis'
+                            },
+                            legend: {
+                                data: ['蒸发量']
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    mark: {show: true},
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            calculable: true,
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    data: data1
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value',
+                                    splitArea: {show: true}
+                                }
+                            ],
+                            series: [
+                                {
+                                    name: '蒸发量',
+                                    type: 'bar',
+                                    data: data2
+                                }
+                            ]
+                        });
+                    }
+            );
+        }
+        
+        /*  var i=0;
+         for(i=0;i<256;i++)
+         {
+         if(tmpdata[i]>0){
+         var ss="\'"+i+"\'";
+         data1.push(ss);
+         data2.push(tmpdata[i]);
+         }
+         
+         }
+         */
+
+    }]);
