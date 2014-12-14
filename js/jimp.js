@@ -254,11 +254,9 @@ jimp.controller('huijiechange', ['$scope', 'imgdata', function ($scope, imgdata)
 
 jimp.controller('erzhitu', ['$scope', 'imgdata', function ($scope, imgdata) {
          var ezCanvas = document.getElementById("bitImage");
-         var ezCtx = ezCanvas.getContext("2d");
-         
+         var ezCtx = ezCanvas.getContext("2d");   
         $scope.scezt=function(){
             var bitvalue=$scope.bitvalue;
-            alert(bitvalue);
             var dstMat = imgdata.get_bit_mat(bitvalue-1);
             var immgg = imgdata.RGBA2ImageData(dstMat);
             ezCtx.putImageData(immgg, 0, 0);
