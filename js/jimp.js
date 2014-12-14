@@ -210,8 +210,6 @@ jimp.controller('huijiechange', ['$scope', 'imgdata', function ($scope, imgdata)
                     echarts: 'js'
                 }
             });
-
-
             $scope.linedata = 0;
 
             var tmpdata = imgdata.data.zftdata;
@@ -308,7 +306,7 @@ jimp.controller('yuzhihua', ['$scope', 'imgdata', function ($scope, imgdata) {
         var yzCanvas = document.getElementById("yuzhi_img");
         var yzCtx = yzCanvas.getContext("2d");
         $scope.scyzt = function () {
-            alert("sdsd");
+       //     alert("sdsd");
             var yzvalue = $scope.yuzhi;
             var dstMat = imgdata.get_yuzhi_mat(yzvalue);
             var immgg = imgdata.RGBA2ImageData(dstMat);
@@ -346,7 +344,7 @@ jimp.controller('yuzhihua', ['$scope', 'imgdata', function ($scope, imgdata) {
                         var myChart = ec.init(document.getElementById('yzhzft'));
                         myChart.setOption({
                             title: {
-                                text: '灰度直方图',
+                                text: '域值直方图',
                                 subtext: '图片'
                             },
                             tooltip: {
