@@ -95,7 +95,7 @@
                 </div>
 
                 <div class="col-md-6">
-                        <canvas id="grayImage"></canvas>
+                    <canvas id="grayImage"></canvas>
                 </div>
             </div>
             <div class="row">
@@ -104,7 +104,7 @@
                 </div>
                 <div class="col-md-6" style="background-color: #00b3ee" ng-controller="huijiechange">
                     <input type=range min=1 max=255 value=1 ng-model="huijie" ng-change="gbhj()"  >
-                    调整灰度值{{255-huijie||1}}
+                    调整灰度值{{255 - huijie||1}}
                 </div>
             </div>
             <div class="row">
@@ -116,19 +116,32 @@
                     <canvas id="bitImage" height="700" width="500"></canvas>
                 </div>
             </div>
-             <div class="row">
+            <div class="row">
                 <div class="col-md-6">
-                   灰度直方图
+                    灰度直方图
                 </div>
                 <div class="col-md-6" style="background-color: #00b3ee" ng-controller="erzhitu">
                     <input type=range min=1 max=8 value=1 ng-model="bitvalue" ng-change="scezt()"  >
                     调整二值图{{bitvalue||1}}
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <canvas id="yuzhi_img" height="700" width="500"></canvas>        
+                </div>
+                <div class="col-md-6">
+                    <div id="yzhzft"></div>
+                </div>
+            </div>
+            <div class="row" ng-controller="yuzhihua" > 
+                <input type=range min=1 max=255 ng-model="yuzhi" ng-change="scyzt()"  >
+                调整二阈值{{yuzhi||1}}
+            </div>   
         </div>
-       
-      
-       
+
+
+
         <!--Step:2 Import echarts.js-->
         <!--Step:2 引入echarts.js-->
         <script src="js/echarts.js"></script>
@@ -139,6 +152,6 @@
         <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
         <script src="js/jimp.js"></script>
         <script src="js/jimp-core.js"></script>
-       
+
     </body>
 </html>

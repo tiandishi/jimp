@@ -5,7 +5,7 @@ var jimp = angular.module('jimp', ['ui.bootstrap', 'ngRoute']);
 jimp.service('imgdata', ['$rootScope', function ($rootScope) {
         var service = {
             data:
-                    {img_mat: null, gray_mat: null, grayCanvas: null, grayCtx: null, zftdata: new Array(255)}
+                    {img_mat: null, gray_mat: null, grayCanvas: null, grayCtx: null, zftdata: new Array(256), yztdata: new Array(2)}
             ,
             img_load: function () {
                 $rootScope.$broadcast('data.update');
@@ -122,6 +122,33 @@ jimp.service('imgdata', ['$rootScope', function ($rootScope) {
                     data[pix + 3] = data2[pix + 3];
                 }
                 return dst;
+            },
+            get_yuzhi_mat: function (i) {
+                var row = service.data.gray_mat.row,
+                        col = service.data.gray_mat.col;
+                var dst = new service.Mat(row, col);
+                service.data.yztdata[0] = service.data.yztdata[1] = 0;
+                var data = dst.data,
+                        data2 = service.data.gray_mat.data;
+                var pix1, pix2, pix = service.data.gray_mat.row * service.data.gray_mat.col * 4;
+                while (pix) {
+                    pix -= 4, pix1 = pix + 1, pix2 = pix + 2;
+                    var aa = data2[pix];
+                    var bb = 0;
+                    if (aa > i)
+                    {
+                        bb = 255;
+                        service.data.yztdata[1]++;
+                    }
+                    else {
+                        bb = 0;
+                        service.data.yztdata[0]++;
+                    }
+                    data[pix] = data[pix1] = data[pix2] = bb;
+                    data[pix + 3] = data2[pix + 3];
+
+                }
+                return dst;
             }
         }
         return service;
@@ -193,12 +220,8 @@ jimp.controller('huijiechange', ['$scope', 'imgdata', function ($scope, imgdata)
 
             var i = 0;
             for (i = 0; i < 256; i++) {
-                if (tmpdata[i] > 0)
-                {
-
-                    data1.push(i);
-                    data2.push(tmpdata[i]);
-                }
+                data1.push(i);
+                data2.push(tmpdata[i]);
             }
 // Step:4 require echarts and use it in the callback.
 // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
@@ -277,5 +300,104 @@ jimp.controller('erzhitu', ['$scope', 'imgdata', function ($scope, imgdata) {
             var dstMat = imgdata.get_bit_mat(bitvalue - 1);
             var immgg = imgdata.RGBA2ImageData(dstMat);
             ezCtx.putImageData(immgg, 0, 0);
+        }
+    }]);
+
+
+jimp.controller('yuzhihua', ['$scope', 'imgdata', function ($scope, imgdata) {
+        var yzCanvas = document.getElementById("yuzhi_img");
+        var yzCtx = yzCanvas.getContext("2d");
+        $scope.scyzt = function () {
+            alert("sdsd");
+            var yzvalue = $scope.yuzhi;
+            var dstMat = imgdata.get_yuzhi_mat(yzvalue);
+            var immgg = imgdata.RGBA2ImageData(dstMat);
+            yzCtx.putImageData(immgg, 0, 0);
+            scyzzft();
+        };
+        function scyzzft() {
+
+            require.config({
+                paths: {
+                    echarts: 'js'
+                }
+            });
+            $scope.linedata = 0;
+
+            var tmpdata = imgdata.data.yztdata;
+            var data1 = new Array();
+            var data2 = new Array();
+
+            var i = 0;
+            for (i = 0; i < 2; i++) {
+                data1.push(i);
+                data2.push(tmpdata[i]);
+            }
+// Step:4 require echarts and use it in the callback.
+// Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/bar',
+                        'echarts/chart/line'
+                    ],
+                    function (ec) {
+                        //--- 折柱 ---
+                        var myChart = ec.init(document.getElementById('yzhzft'));
+                        myChart.setOption({
+                            title: {
+                                text: '灰度直方图',
+                                subtext: '图片'
+                            },
+                            tooltip: {
+                                trigger: 'axis'
+                            },
+                            legend: {
+                                data: ['像素个数']
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    mark: {show: true},
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            calculable: true,
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    data: data1
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value'
+                                }
+                            ],
+                            series: [
+                                {
+                                    name: '像素个数',
+                                    type: 'bar',
+                                    data: data2,
+                                    markPoint: {
+                                        data: [
+                                            {type: 'max', name: '最大值'},
+                                            {type: 'min', name: '最小值'}
+                                        ]
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ]
+                                    }
+                                }
+                            ]
+                        });
+                    }
+            );
+
         }
     }]);
