@@ -153,33 +153,33 @@ jimp.controller('huijiechange', ['$scope', 'imgdata', function ($scope, imgdata)
 
             var immgg = imgdata.RGBA2ImageData(dstMat);
             imgdata.data.grayCtx.putImageData(immgg, 0, 0);
-        }
-    }]);
 
-jimp.controller('hualine', ['$scope', 'imgdata', function ($scope, imgdata) {
-        require.config({
-            paths: {
-                echarts: 'js'
-            }
-        });
-        
-        
-        $scope.linedata = 0;
-        $scope.sczft = function () {
-           // var ttdata = [3, 3, 3, 3, 5.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3];
-            var tmpdata = imgdata.data.zftdata;
-        var data1 = new Array();
-        var data2 = new Array();
-        
-        var i=0;
-        for(i=0;i<256;i++){
-            if(tmpdata[i]>0)
-            {
-                var ss="\'"+i+"\'"
-                data1.push(ss);
-                data2.push(tmpdata[i]);
-            }
+            sczft();
         }
+        function sczft() {
+            //alert("hbb");
+            require.config({
+                paths: {
+                    echarts: 'js'
+                }
+            });
+
+
+            $scope.linedata = 0;
+
+            var tmpdata = imgdata.data.zftdata;
+            var data1 = new Array();
+            var data2 = new Array();
+
+            var i = 0;
+            for (i = 0; i < 256; i++) {
+                if (tmpdata[i] > 0)
+                {
+
+                    data1.push(i);
+                    data2.push(tmpdata[i]);
+                }
+            }
 // Step:4 require echarts and use it in the callback.
 // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
             require(
@@ -196,7 +196,7 @@ jimp.controller('hualine', ['$scope', 'imgdata', function ($scope, imgdata) {
                                 trigger: 'axis'
                             },
                             legend: {
-                                data: ['蒸发量']
+                                data: ['像素个数']
                             },
                             toolbox: {
                                 show: true,
@@ -223,7 +223,7 @@ jimp.controller('hualine', ['$scope', 'imgdata', function ($scope, imgdata) {
                             ],
                             series: [
                                 {
-                                    name: '蒸发量',
+                                    name: '像素个数',
                                     type: 'bar',
                                     data: data2
                                 }
@@ -232,17 +232,10 @@ jimp.controller('hualine', ['$scope', 'imgdata', function ($scope, imgdata) {
                     }
             );
         }
-        
-        /*  var i=0;
-         for(i=0;i<256;i++)
-         {
-         if(tmpdata[i]>0){
-         var ss="\'"+i+"\'";
-         data1.push(ss);
-         data2.push(tmpdata[i]);
-         }
-         
-         }
-         */
 
+        ;
+    }]);
+
+jimp.controller('hualine', ['$scope', 'imgdata', function ($scope, imgdata) {
+       
     }]);
