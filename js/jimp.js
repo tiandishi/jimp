@@ -123,6 +123,30 @@ jimp.service('imgdata', ['$rootScope', function ($rootScope) {
                 }
                 return dst;
             },
+            line_change_mat: function (a, b) {
+               var num_a=parseFloat(a);
+               var num_b=parseFloat(b);
+                var row = service.data.gray_mat.row,
+                        col = service.data.gray_mat.col;
+                var dst = new service.Mat(row, col);
+                var data = dst.data,
+                        data2 = service.data.gray_mat.data;
+                var pix1, pix2, pix = service.data.gray_mat.row * service.data.gray_mat.col * 4;
+                while (pix) {
+                    pix -= 4, pix1 = pix + 1, pix2 = pix + 2;
+                    var aa = data2[pix];
+                    var bb = aa*num_a + num_b;
+                    if (bb > 255)
+                    {    bb = 255;}
+                    if (bb < 0)
+                    {
+                        bb = 0;
+                    }
+                    data[pix] = data[pix1] = data[pix2] = bb;
+                    data[pix + 3] = data2[pix + 3];
+                }
+                return dst;
+            },
             get_yuzhi_mat: function (i) {
                 var row = service.data.gray_mat.row,
                         col = service.data.gray_mat.col;
@@ -156,7 +180,7 @@ jimp.service('imgdata', ['$rootScope', function ($rootScope) {
 
 jimp.config(['$routeProvider', '$locationProvider', '$sceProvider', function ($routeProvider, $locationProvider, $sceProvider) {
         $routeProvider
-                .when('/', {controller: 'DemoCtrl'})
+
                 .otherwise({redirectTo: '/'});
         $locationProvider.html5Mode(true);
     }]);
@@ -306,7 +330,7 @@ jimp.controller('yuzhihua', ['$scope', 'imgdata', function ($scope, imgdata) {
         var yzCanvas = document.getElementById("yuzhi_img");
         var yzCtx = yzCanvas.getContext("2d");
         $scope.scyzt = function () {
-       //     alert("sdsd");
+            //     alert("sdsd");
             var yzvalue = $scope.yuzhi;
             var dstMat = imgdata.get_yuzhi_mat(yzvalue);
             var immgg = imgdata.RGBA2ImageData(dstMat);
@@ -398,4 +422,17 @@ jimp.controller('yuzhihua', ['$scope', 'imgdata', function ($scope, imgdata) {
             );
 
         }
+    }]);
+jimp.controller('line_change', ['$scope', 'imgdata', function ($scope, imgdata) {
+        var line_changeimg = document.getElementById('line_change1');
+        var line_changeimg_ctx = line_changeimg.getContext("2d");
+        $scope.line_a = 1;
+        $scope.line_b = 0;
+        $scope.linechange = function () {
+            var aa = $scope.line_a;
+            var bb = $scope.line_b;
+            var dstMat = imgdata.line_change_mat(aa, bb);
+            var immgg = imgdata.RGBA2ImageData(dstMat);
+            line_changeimg_ctx.putImageData(immgg, 0, 0);
+        };
     }]);

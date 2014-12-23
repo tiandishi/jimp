@@ -137,9 +137,27 @@
             <div class="row" ng-controller="yuzhihua" > 
                 <input type=range min=1 max=255 ng-model="yuzhi" ng-change="scyzt()"  >
                 调整二阈值{{yuzhi||1}}
-            </div>   
+            </div> 
+            <div ng-controller="line_change">
+            <div class="row">
+                <div class="col-md-6">
+                    <canvas id="line_change1" height="700" width="500"></canvas>        
+                </div>
+                <div class="col-md-6">
+                    <canvas id="line_change2" height="700" width="500"></canvas> 
+                </div>
+            </div>
+            <div class="row"> 
+               <div class="col-md-6">
+                线性公式: Y=<input type=text ng-model="line_a" ng-change="linechange()" >*X+<input type=text ng-model="line_b" ng-change="linechange()">     
+                </div>
+                <div class="col-md-6">
+                   
+                </div>
+            </div> 
+            </div>
         </div>
-
+        
 
 
         <!--Step:2 Import echarts.js-->
