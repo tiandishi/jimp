@@ -124,8 +124,8 @@ jimp.service('imgdata', ['$rootScope', function ($rootScope) {
                 return dst;
             },
             line_change_mat: function (a, b) {
-               var num_a=parseFloat(a);
-               var num_b=parseFloat(b);
+                var num_a = parseFloat(a);
+                var num_b = parseFloat(b);
                 var row = service.data.gray_mat.row,
                         col = service.data.gray_mat.col;
                 var dst = new service.Mat(row, col);
@@ -135,15 +135,35 @@ jimp.service('imgdata', ['$rootScope', function ($rootScope) {
                 while (pix) {
                     pix -= 4, pix1 = pix + 1, pix2 = pix + 2;
                     var aa = data2[pix];
-                    var bb = aa*num_a + num_b;
+                    var bb = aa * num_a + num_b;
                     if (bb > 255)
-                    {    bb = 255;}
+                    {
+                        bb = 255;
+                    }
                     if (bb < 0)
                     {
                         bb = 0;
                     }
                     data[pix] = data[pix1] = data[pix2] = bb;
                     data[pix + 3] = data2[pix + 3];
+                }
+                return dst;
+            },
+            get_zft_data:function(srcMat){
+                var row = srcMat.row,
+                        col = srcMat.col;
+                var dst = new Array(256);
+                var i=0;
+                for(i=0;i<256;i++)
+                {
+                    dst[i]=0;
+                }
+                var data2 = srcMat.data;
+                var pix = row * col * 4;
+                while (pix) {
+                    pix -= 4;
+                    var aa = data2[pix];
+                    dst[aa]++;
                 }
                 return dst;
             },
@@ -432,7 +452,93 @@ jimp.controller('line_change', ['$scope', 'imgdata', function ($scope, imgdata) 
             var aa = $scope.line_a;
             var bb = $scope.line_b;
             var dstMat = imgdata.line_change_mat(aa, bb);
+            var zftdata=imgdata.get_zft_data(dstMat);
             var immgg = imgdata.RGBA2ImageData(dstMat);
             line_changeimg_ctx.putImageData(immgg, 0, 0);
+
+            line_zft(zftdata);
         };
+
+        function line_zft(zftdata) {
+            require.config({
+                paths: {
+                    echarts: 'js'
+                }
+            });
+            $scope.linedata = 0;
+
+            var tmpdata = imgdata.data.yztdata;
+            var data1 = new Array();
+            var data2 = zftdata;
+
+            var i = 0;
+            for (i = 0; i < 256; i++) {
+                data1.push(i);
+            }
+// Step:4 require echarts and use it in the callback.
+// Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/bar',
+                        'echarts/chart/line'
+                    ],
+                    function (ec) {
+                        //--- 折柱 ---
+                        var myChart = ec.init(document.getElementById('line_zft'));
+                        myChart.setOption({
+                            title: {
+                                text: '变换后直方图',
+                                subtext: '图片'
+                            },
+                            tooltip: {
+                                trigger: 'axis'
+                            },
+                            legend: {
+                                data: ['像素个数']
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    mark: {show: true},
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            calculable: true,
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    data: data1
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value'
+                                }
+                            ],
+                            series: [
+                                {
+                                    name: '像素个数',
+                                    type: 'bar',
+                                    data: data2,
+                                    markPoint: {
+                                        data: [
+                                            {type: 'max', name: '最大值'},
+                                            {type: 'min', name: '最小值'}
+                                        ]
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ]
+                                    }
+                                }
+                            ]
+                        });
+                    }
+            );
+        }
     }]);
