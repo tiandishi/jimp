@@ -280,8 +280,8 @@ function sczft(data1,data2) {
                 myChart.setOption({
                     title: {
                         text: '变换后直方图',
-                        subtext: '图片',
-                        color : '#FFFFFF'
+                        subtext: '图片'
+                        
                     },
                     tooltip: {
                         trigger: 'axis'
