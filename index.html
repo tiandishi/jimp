@@ -35,7 +35,7 @@
                     -->
                 </ul>
                 <div id="filter-target">
-                <canvas id="img_canvas"></canvas>
+                    <canvas id="img_canvas"></canvas>
                 </div>
 
                 <label class="selector" >
@@ -53,7 +53,7 @@
                         {{gray_value}}
                     </label>
                 </div>
-                
+
                 <div class="controls" id="controls-bitplane" ng-if="selected.name == 'bitplane'">
                     <label>
                         位平面取值:
@@ -61,14 +61,21 @@
                         {{bit_value}}
                     </label>
                 </div>
-                
+
+
+                <div class="controls" ng-if="selected.name == 'gray_line_change'">
+                    <label>
+                        线性变换:Y=
+                        <input type="text" ng-model="line_a" ng-init="line_a =1" ng-change="line_change(line_a,line_b)">*X+<input type="text" ng-model="line_b" ng-init="line_b = 0" ng-change="line_change(line_a,line_b)">                     
+                    </label>
+                </div>
                 <div class="controls" id="controls-blur" ng-if="selected.name == 'blur'">
                     <label>
                         值:
                         <input type="range" name="data-pb-blur-amount" min="0" max="10" step="0.05" value="0">
                     </label>
                 </div>
-                
+
                 <div class="controls" ng-if="selected.name == 'yuzhitu'">
                     <label>
                         阈值:
@@ -149,8 +156,7 @@
                     </label>
                     <label>
                         Opacity:
-                        <input type="range" ng-init="data - pb - tint - opacity = 0.5" min="0" max="1" step="0.01">
-                        {{data - pb - tint - opacity}}
+                        
                     </label>
                 </div>
 

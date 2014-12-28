@@ -20,7 +20,7 @@ jimp.service('imgdata', ['$rootScope', function ($rootScope) {
         };
         return service;
     }]);
-jimp.controller('select_op', function ($scope) {
+jimp.controller('select_op', ['$scope',function ($scope,$location) {
     var imgCanvas = document.getElementById("img_canvas");
     var imgCtx = imgCanvas.getContext("2d");
     var buffer = document.createElement("canvas");
@@ -62,7 +62,12 @@ jimp.controller('select_op', function ($scope) {
             filterClass: "filter-blur",
             controlId: "黑白变换"
         },
-       
+        {
+            name: "gray_line_change",
+            label: "线性变换",
+            filterClass: "filter-blur",
+            controlId: "黑白变换"
+        },
         {
             name: "blur",
             label: "模糊",
@@ -121,6 +126,15 @@ jimp.controller('select_op', function ($scope) {
         var dstMat = gray2yuzhitu(gray_matrix,value);
         mat2imgshow(dstMat, imgCanvas, imgCtx);
         var zdtdata=get_zft_data2(dstMat);
+        sczft(zdtdata.data1,zdtdata.data2);
+    };
+   
+    $scope.line_change=function(line_a,line_b){
+        var aa= parseFloat(line_a)||1;
+        var bb= parseFloat(line_b)||0;
+       var dstMat = gray2line_change(gray_matrix,aa,bb);
+       mat2imgshow(dstMat, imgCanvas, imgCtx);
+       var zdtdata=get_zft_data256(dstMat);
        sczft(zdtdata.data1,zdtdata.data2);
     };
-});
+}]);

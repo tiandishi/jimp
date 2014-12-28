@@ -189,7 +189,34 @@ function get_zft_data256(__src)
     return res;
 }
 
+function gray2line_change(gray_matrix,aa,bb){
+    if (gray_matrix == null)
+        gray_matrix = color2gray(init_matrix, 256);
+    var row = gray_matrix.row,
+            col = gray_matrix.col;
+    var dst = new Mat(row, col);
+    var data = dst.data,
+            data2 = gray_matrix.data;
+    var pix1, pix2, pix = gray_matrix.row * gray_matrix.col * 4;
+    while (pix) {
+        pix -= 4, pix1 = pix + 1, pix2 = pix + 2;
+                    var X = data2[pix];
+                    var Y =aa*X+bb;
+                    Y=check(Y);
+        data[pix] = data[pix1] = data[pix2] = Y;
+        data[pix + 3] = data2[pix + 3];
+    }
+    dst.type = "CV_GRAY";
+    return dst;
+}
 
+function check(x){
+    if(x>255)
+        return 255;
+    else if(x<0)
+        return 0;
+    else return x;
+}
 function get_zft_data2(__src)
 {
     var res={
@@ -253,7 +280,8 @@ function sczft(data1,data2) {
                 myChart.setOption({
                     title: {
                         text: '变换后直方图',
-                        subtext: '图片'
+                        subtext: '图片',
+                        color : '#FFFFFF'
                     },
                     tooltip: {
                         trigger: 'axis'
