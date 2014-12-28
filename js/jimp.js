@@ -21,13 +21,12 @@ jimp.service('imgdata', ['$rootScope', function ($rootScope) {
         return service;
     }]);
 jimp.controller('select_op', function ($scope) {
-    
-    var buffer = document.createElement("canvas");
     var imgCanvas = document.getElementById("img_canvas");
     var imgCtx = imgCanvas.getContext("2d");
+    var buffer = document.createElement("canvas");
 // get the canvas context
     var c = buffer.getContext('2d');
-
+    
 
     var img = new Image();
     img.onload = function () {
@@ -99,9 +98,9 @@ jimp.controller('select_op', function ($scope) {
             controlId: "controls-tint"
         }
     ];
-    $scope.grey_img_change = function () {
-        var img_mat = init_matrix;
-        var dstMat = color2grey(init_matrix);
+    $scope.gray_img_change = function (gray_value) {
+        var value= parseInt(gray_value);
+        var dstMat = color2grey(init_matrix,value);
         mat2imgshow(dstMat, imgCanvas, imgCtx);
         var zdtdata=get_zft_data(dstMat);
         sczft(zdtdata);

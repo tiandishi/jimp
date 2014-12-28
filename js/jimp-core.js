@@ -80,8 +80,8 @@ function get_img_mat(mat)
 
 
 //彩色转成灰阶
-function color2grey(__src) {
-
+function color2grey(__src, max) {
+    var aa = 257 - max;
     if (__src.type && __src.type === "CV_RGBA") {
         var row = __src.row,
                 col = __src.col;
@@ -90,7 +90,14 @@ function color2grey(__src) {
                 data2 = __src.data;
         var pix1, pix2, pix = __src.row * __src.col * 4;
         while (pix) {
-            data[pix -= 4] = data[pix1 = pix + 1] = data[pix2 = pix + 2] = (data2[pix] * 299 + data2[pix1] * 587 + data2[pix2] * 114) / 1000;
+            pix -= 4;
+            pix1 = pix + 1;
+            pix2 = pix + 2;
+            var bb = (data2[pix] * 299 + data2[pix1] * 587 + data2[pix2] * 114) / 1000;
+            bb = bb / aa;
+            bb = Math.round(bb);
+            bb = bb * aa;
+            data[pix] = data[pix1] = data[pix2] = bb;
             data[pix + 3] = data2[pix + 3];
         }
     } else {

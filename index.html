@@ -1,156 +1,155 @@
 <!doctype html>
 <html ng-app="jimp">
-	<head>
-		<title>数字图像处理作业</title>
-		<meta charset="utf-8" />
+    <head>
+        <title>数字图像处理作业</title>
+        <meta charset="utf-8" />
 
-		
-		<link rel="stylesheet" type="text/css" href="css/playground.css" />
-	</head>
-	<body>
-		
-		<header>
-			<h2><a href="http://github.com/tiandishi/jimp">数字图像处理</a>作业 </h2>
-			
-				<span>by tiandishi</span>
-				<a href="http://tiandishi.github.io">@tiandishi</a>
-			
-                </header>	
-		<a href="http://tiandishi.github.io" class="github">Fork me on GitHub</a>
-		
-		
-		<div id="interaction" ng-controller="select_op">
 
-			<ul class="thumbnails">
-				<li class="thumb"><img src="images/500/lighthouse.jpg" width="50" height="33" alt=""></li>
-				<li class="thumb"><img src="images/500/staples.jpg" width="50" height="33" alt=""></li>
-				<li class="thumb current"><img src="images/500/bee.jpg" width="50" height="33" alt=""></li>
-				<li class="thumb"><img src="images/500/leaves.jpg" width="50" height="33" alt=""></li>
-				<li class="thumb"><img src="images/500/louvre.jpg" width="50" height="33" alt=""></li>
-				<li class="thumb"><img src="images/500/sign.jpg" width="50" height="33" alt=""></li>
-				<li class="thumb"><img src="images/500/road.jpg" width="50" height="33" alt=""></li>
-				<li class="thumb"><img src="images/500/jordan.jpg" width="50" height="33" alt=""></li>
-				<li class="thumb"><img src="images/500/stones.jpg" width="50" height="33" alt=""></li>
-			</ul>
-                       
-                      
-                        <canvas id="img_canvas"></canvas>
-                        
+        <link rel="stylesheet" type="text/css" href="css/playground.css" />
+    </head>
+    <body>
 
-                        <label class="selector" >
-				变化:
-                                <select id="filter-selector" ng-model="selected" ng-options="m.label for m in operations">
-                                    <option value="">请选择</option>                 
-                                </select>
-                               
-			</label>
-                        
-                        <div class="controls" id="controls-blur" ng-if="selected.name=='grey_img'">
-				<label>
-					灰度值:
-                                        <input type="range" ng-model="grey_value" ng-init="grey_value=256" ng-change="grey_img_change()" min="1" max="256" step="1">
-                                        {{grey_value}}
-				</label>
-			</div>
-                        <div class="controls" id="controls-blur" ng-if="selected.name=='blur'">
-				<label>
-					值:
-					<input type="range" name="data-pb-blur-amount" min="0" max="10" step="0.05" value="0">
-				</label>
-			</div>
+        <header>
+            <h2><a href="http://github.com/tiandishi/jimp">数字图像处理</a>作业 </h2>
 
-			<div class="controls" id="controls-edges" ng-if="selected.name=='edges' ">
-				<label>
-					值:
-					<input type="range" name="data-pb-edges-amount" min="0" max="1" step="0.01" value="1">
-				</label>
-			</div>
+            <span>by tiandishi</span>
+            <a href="http://tiandishi.github.io">@tiandishi</a>
 
-			
+        </header>	
+        <a href="http://tiandishi.github.io" class="github">Fork me on GitHub</a>
 
-			<div class="controls" id="controls-greyscale" ng-if="selected.name=='greyscale'">
-				<label>
-					Opacity:
-					<input type="range" name="data-pb-greyscale-opacity" min="0" max="1" step="0.01" value="1">
-				</label>
-			</div>
+        <div ng-controller="select_op">
+            <div id="interaction" >
 
-			
-
-			<div class="controls" id="controls-mosaic" ng-if="selected.name=='mosaic'">
-				<label>
-					Opacity:
-					<input type="range" name="data-pb-mosaic-opacity" min="0" max="1" step="0.01" value="1">
-				</label>
-				<label>
-					Size:
-					<input type="range" name="data-pb-mosaic-size" min="1" max="40" step="1" value="5">
-				</label>
-			</div>
-
-			<div class="controls" id="controls-noise" ng-if="selected.name=='noise'">
-				<label>
-					值:
-					<input type="range" name="data-pb-noise-amount" min="0" max="100" step="1" value="30">
-				</label>
-				<label>
-					Type:
-					<input type="radio" name="data-pb-noise-type" value="mono"> Mono
-					<input type="radio" name="data-pb-noise-type" value="colour"> Colour
-				</label>
-			</div>
-
-			<div class="controls" id="controls-posterize" ng-if="selected.name=='posterize'">
-				<label>
-					值:
-					<input type="range" name="data-pb-posterize-amount" min="2" max="100" step="1" value="5">
-				</label>
-				<label>
-					Opacity:
-					<input type="range" name="data-pb-posterize-opacity" min="0" max="1" step="0.01" value="1">
-				</label>
-			</div>
-
-			<div class="controls" id="controls-sepia" ng-if="selected.name=='sepia'">
-				<label>
-					Opacity:
-					<input type="range" name="data-pb-sepia-opacity" min="0" max="1" step="0.01" value="0.5">
-				</label>
-			</div>
-
-			<div class="controls" id="controls-sharpen" ng-if="selected.name=='sharpen'">
-				<label>
-					值:
-					<input type="range" name="data-pb-sharpen-amount" min="0" max="1" step="0.01" value="0.2">
-				</label>
-			</div>
-
-			<div class="controls" id="controls-tint" ng-if="selected.name=='tint'">
-				<label>
-					颜色:
-					<input type="text" name="data-pb-tint-color" value="#FF0000">
-				</label>
-				<label>
-					Opacity:
-					<input type="range" ng-init="data-pb-tint-opacity=0.5" min="0" max="1" step="0.01">
-                                        {{data-pb-tint-opacity}}
-				</label>
-			</div>
-			
-		</div>
-                
-                <div id="interaction">
-                    <div id="zhifangtu" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
-
+                <ul class="thumbnails">
+                    <li class="thumb"><img src="images/500/lighthouse.jpg" width="50" height="33" alt=""></li>
+                    <li class="thumb"><img src="images/500/staples.jpg" width="50" height="33" alt=""></li>
+                    <li class="thumb current"><img src="images/500/bee.jpg" width="50" height="33" alt=""></li>
+                    <li class="thumb"><img src="images/500/leaves.jpg" width="50" height="33" alt=""></li>
+                    <li class="thumb"><img src="images/500/louvre.jpg" width="50" height="33" alt=""></li>
+                    <li class="thumb"><img src="images/500/sign.jpg" width="50" height="33" alt=""></li>
+                    <li class="thumb"><img src="images/500/road.jpg" width="50" height="33" alt=""></li>
+                    <li class="thumb"><img src="images/500/jordan.jpg" width="50" height="33" alt=""></li>
+                    <li class="thumb"><img src="images/500/stones.jpg" width="50" height="33" alt=""></li>
+                </ul>
+                <div id="filter-target">
+                <canvas id="img_canvas"></canvas>
                 </div>
-		<footer>
-			
-		</footer>
+
+                <label class="selector" >
+                    变化:
+                    <select id="filter-selector" ng-model="selected" ng-options="m.label for m in operations">
+                        <option value="">请选择</option>                 
+                    </select>
+
+                </label>
+
+                <div class="controls" id="controls-blur" ng-if="selected.name == 'grey_img'">
+                    <label>
+                        灰度值:
+                        <input type="range" ng-model="gray_value" ng-init="gray_value = 256" ng-change="gray_img_change(gray_value)" min="1" max="256" step="1">
+                        {{gray_value}}
+                    </label>
+                </div>
+                <div class="controls" id="controls-blur" ng-if="selected.name == 'blur'">
+                    <label>
+                        值:
+                        <input type="range" name="data-pb-blur-amount" min="0" max="10" step="0.05" value="0">
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-edges" ng-if="selected.name == 'edges'">
+                    <label>
+                        值:
+                        <input type="range" name="data-pb-edges-amount" min="0" max="1" step="0.01" value="1">
+                    </label>
+                </div>
+
+
+
+                <div class="controls" id="controls-greyscale" ng-if="selected.name == 'greyscale'">
+                    <label>
+                        Opacity:
+                        <input type="range" name="data-pb-greyscale-opacity" min="0" max="1" step="0.01" value="1">
+                    </label>
+                </div>
+
+
+
+                <div class="controls" id="controls-mosaic" ng-if="selected.name == 'mosaic'">
+                    <label>
+                        Opacity:
+                        <input type="range" name="data-pb-mosaic-opacity" min="0" max="1" step="0.01" value="1">
+                    </label>
+                    <label>
+                        Size:
+                        <input type="range" name="data-pb-mosaic-size" min="1" max="40" step="1" value="5">
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-noise" ng-if="selected.name == 'noise'">
+                    <label>
+                        值:
+                        <input type="range" name="data-pb-noise-amount" min="0" max="100" step="1" value="30">
+                    </label>
+                    <label>
+                        Type:
+                        <input type="radio" name="data-pb-noise-type" value="mono"> Mono
+                        <input type="radio" name="data-pb-noise-type" value="colour"> Colour
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-posterize" ng-if="selected.name == 'posterize'">
+                    <label>
+                        值:
+                        <input type="range" name="data-pb-posterize-amount" min="2" max="100" step="1" value="5">
+                    </label>
+                    <label>
+                        Opacity:
+                        <input type="range" name="data-pb-posterize-opacity" min="0" max="1" step="0.01" value="1">
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-sepia" ng-if="selected.name == 'sepia'">
+                    <label>
+                        Opacity:
+                        <input type="range" name="data-pb-sepia-opacity" min="0" max="1" step="0.01" value="0.5">
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-sharpen" ng-if="selected.name == 'sharpen'">
+                    <label>
+                        值:
+                        <input type="range" name="data-pb-sharpen-amount" min="0" max="1" step="0.01" value="0.2">
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-tint" ng-if="selected.name == 'tint'">
+                    <label>
+                        颜色:
+                        <input type="text" name="data-pb-tint-color" value="#FF0000">
+                    </label>
+                    <label>
+                        Opacity:
+                        <input type="range" ng-init="data - pb - tint - opacity = 0.5" min="0" max="1" step="0.01">
+                        {{data - pb - tint - opacity}}
+                    </label>
+                </div>
+
+            </div>
+
+            <div id="interaction" ng-if="selected">
+                <div id="zhifangtu" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
+            </div>
+        </div>
+        <footer>
+
+        </footer>
 
         <script src="js/echarts.js"></script>
         <script src="bower_components/angular/angular.min.js"></script>
         <script src="bower_components/angular-route/angular-route.min.js"></script>
         <script src="js/jimp-core.js"></script>
         <script src="js/jimp.js"></script>   
-	</body> 
+    </body> 
 </html>
