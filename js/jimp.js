@@ -44,11 +44,25 @@ jimp.controller('select_op', function ($scope) {
     $scope.selected = '';
     $scope.operations = [
         {
-            name: "grey_img",
+            name: "gray_img",
             label: "生成灰度图",
             filterClass: "filter-blur",
             controlId: "controls-blur"
         },
+        {
+            name: "bitplane",
+            label: "取位平面",
+            filterClass: "filter-blur",
+            controlId: "controls-blur"
+        },
+        
+        {
+            name: "yuzhitu",
+            label: "阈值二值图",
+            filterClass: "filter-blur",
+            controlId: "controls-blur"
+        },
+       
         {
             name: "blur",
             label: "模糊",
@@ -62,10 +76,10 @@ jimp.controller('select_op', function ($scope) {
             controlId: "controls-edges"
         },
         {
-            name: "greyscale",
+            name: "grayscale",
             label: "灰度拉伸",
-            filterClass: "filter-greyscale",
-            controlId: "controls-greyscale"
+            filterClass: "filter-grayscale",
+            controlId: "controls-grayscale"
         },
         {
             name: "mosaic",
@@ -100,10 +114,24 @@ jimp.controller('select_op', function ($scope) {
     ];
     $scope.gray_img_change = function (gray_value) {
         var value= parseInt(gray_value);
-        var dstMat = color2grey(init_matrix,value);
+        var dstMat = color2gray(init_matrix,value);
         mat2imgshow(dstMat, imgCanvas, imgCtx);
-        var zdtdata=get_zft_data(dstMat);
-        sczft(zdtdata);
+        var zdtdata=get_zft_data256(dstMat);
+        sczft(zdtdata.data1,zdtdata.data2);
     };
-
+    $scope.bitplane_change=function (bit_value){
+        var value= parseInt(bit_value);
+        var dstMat = gray2bitplane(gray_matrix,value);
+        mat2imgshow(dstMat, imgCanvas, imgCtx);
+        var zdtdata=get_zft_data2(dstMat);
+       sczft(zdtdata.data1,zdtdata.data2);
+    };
+    
+    $scope.yuzhi_change=function(yuzhi_value){
+        var value= parseInt(yuzhi_value);
+        var dstMat = gray2yuzhitu(gray_matrix,value);
+        mat2imgshow(dstMat, imgCanvas, imgCtx);
+        var zdtdata=get_zft_data2(dstMat);
+       sczft(zdtdata.data1,zdtdata.data2);
+    };
 });

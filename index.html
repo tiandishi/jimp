@@ -44,20 +44,36 @@
 
                 </label>
 
-                <div class="controls" id="controls-blur" ng-if="selected.name == 'grey_img'">
+                <div class="controls" id="controls-blur" ng-if="selected.name == 'gray_img'">
                     <label>
                         灰度值:
                         <input type="range" ng-model="gray_value" ng-init="gray_value = 256" ng-change="gray_img_change(gray_value)" min="1" max="256" step="1">
                         {{gray_value}}
                     </label>
                 </div>
+                
+                <div class="controls" id="controls-bitplane" ng-if="selected.name == 'bitplane'">
+                    <label>
+                        位平面取值:
+                        <input type="range" ng-model="bit_value" ng-init="bit_value = 1" ng-change="bitplane_change(bit_value)" min="1" max="8" step="1">
+                        {{bit_value}}
+                    </label>
+                </div>
+                
                 <div class="controls" id="controls-blur" ng-if="selected.name == 'blur'">
                     <label>
                         值:
                         <input type="range" name="data-pb-blur-amount" min="0" max="10" step="0.05" value="0">
                     </label>
                 </div>
-
+                
+                <div class="controls" ng-if="selected.name == 'yuzhitu'">
+                    <label>
+                        阈值:
+                        <input type="range" ng-model="yuzhi_value" ng-change="yuzhi_change(yuzhi_value)" min="0" max="255" step="1">
+                        {{yuzhi_value}}
+                    </label>
+                </div>
                 <div class="controls" id="controls-edges" ng-if="selected.name == 'edges'">
                     <label>
                         值:
@@ -67,10 +83,10 @@
 
 
 
-                <div class="controls" id="controls-greyscale" ng-if="selected.name == 'greyscale'">
+                <div class="controls" id="controls-grayscale" ng-if="selected.name == 'grayscale'">
                     <label>
                         Opacity:
-                        <input type="range" name="data-pb-greyscale-opacity" min="0" max="1" step="0.01" value="1">
+                        <input type="range" name="data-pb-grayscale-opacity" min="0" max="1" step="0.01" value="1">
                     </label>
                 </div>
 
