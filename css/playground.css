@@ -156,7 +156,7 @@ header aside {
 	}
 
 #interaction, #examples {
-	width: 525px;
+	width: 550px;
 	padding: 27px 30px 57px 30px;
 	margin: 0 auto 30px auto;
 	background: rgba(27, 30, 33, 0.5);
@@ -171,7 +171,13 @@ header aside {
 	#examples {
 		padding-bottom: 0;
 	}
-#filter-target {
+        #wrap_canvas{
+        border: solid 12px #fff;
+	-webkit-box-shadow: #000 0 5px 32px;
+	-moz-box-shadow: #000 0 5px 32px;
+	box-shadow: #000 0 5px 32px;
+        }
+#filter-target {    
 	border: solid 12px #fff;
 	-webkit-box-shadow: #000 0 5px 32px;
 	-moz-box-shadow: #000 0 5px 32px;

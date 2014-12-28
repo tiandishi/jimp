@@ -1,14 +1,37 @@
-function Mat(_row, _col, _data, _buffer) {
-    this.row = _row || 0;
-    this.col = _col || 0;
+var init_matrix = null;
+var grey_matrix = null;
+var buffer = document.createElement("canvas");
+// get the canvas context
+var c = buffer.getContext('2d');
+
+function Mat(__row, __col, __data, __buffer) {
+    this.row = __row || 0;
+    this.col = __col || 0;
     this.channel = 4;
-    this.buffer = _buffer || new ArrayBuffer(_row * _col * 4);
+    this.buffer = __buffer || new ArrayBuffer(__row * __col * 4);
     this.data = new Uint8ClampedArray(this.buffer);
-    _data && this.data.set(_data);
+    __data && this.data.set(__data);
     this.bytes = 1;
     this.type = "CV_RGBA";
 }
+function imread(__image) {
+    var width = __image.width,
+            height = __image.height;
+    iResize(buffer, width, height);
 
+    c.drawImage(__image, 0, 0);
+    var imageData = c.getImageData(0, 0, width, height),
+            tempMat = new Mat(height, width, imageData.data);
+    imageData = null;
+    c.clearRect(0, 0, width, height);
+    return tempMat;
+}
+//  调用以上方法可以得到图形矩阵
+
+function iResize(Canvas, __width, __height) {
+    Canvas.width = __width;
+    Canvas.height = __height;
+}
 
 //彩图转灰白  src->dst
 function cvtColor(_src, max) {
@@ -34,10 +57,6 @@ function cvtColor(_src, max) {
     return dst;
 }
 
-function test_it() {
-    alert("shishi");
-}
-
 function amt_to_gray(img_mat) {
     var newImage = cvtColor(img_mat);
 
@@ -49,59 +68,149 @@ function amt_to_gray(img_mat) {
 }
 
 
-function get_img_mat(iCanvas, url)
+function get_img_mat(mat)
 {
-    this.canvas = iCanvas;
-    this.iCtx = this.canvas.getContext("2d");
-    this.url = url;
+    var img = new Image();
+    img.onload = function () {
+        var myMat = imread(img);
+        init_matrix = myMat;
+    };
+    img.src = "images/1.jpg";
 }
-get_img_mat.prototype = {
-    imread: function (_image) {
-        var width = _image.width,
-                height = _image.height;
-        this.iResize(width, height);
-        this.iCtx.drawImage(_image, 0, 0);
-        var imageData = this.iCtx.getImageData(0, 0, width, height),
-                tempMat = new Mat(height, width, imageData.data);
-        imageData = null;
-        this.iCtx.clearRect(0, 0, width, height);
-        return tempMat;
-    },
-    iResize: function (_width, _height) {
-        this.canvas.width = _width;
-        this.canvas.height = _height;
-    },
-    RGBA2ImageData: function (_imgMat) {
-        var width = _imgMat.col,
-                height = _imgMat.row,
-                imageData = this.iCtx.createImageData(width, height);
-        imageData.data.set(_imgMat.data);
-        return imageData;
-    },
-    get_mat: function () {
-        var img = new Image();
-        var _this = this;
-        img.onload = function () {
-            var myMat = _this.imread(img);
-            //return myMat;
-            var newImage = cvtColor(myMat);
-            var newIamgeData = _this.RGBA2ImageData(newImage);
-            _this.iCtx.putImageData(newIamgeData, 0, 0);
-        };
-        img.src = this.url;
-    },
-    img_to_gray_in_max: function (max) {
-        var img = new Image();
-        var _this = this;
-        img.onload = function () {
-            var myMat = _this.imread(img);
-            //return myMat;
-            var aa = 256 / max;
-            var newImage = cvtColor(myMat, aa);
-            var newIamgeData = _this.RGBA2ImageData(newImage);
-            _this.iCtx.putImageData(newIamgeData, 0, 0);
-        };
-        img.src = this.url;
-    }
 
-};
+
+//彩色转成灰阶
+function color2grey(__src) {
+
+    if (__src.type && __src.type === "CV_RGBA") {
+        var row = __src.row,
+                col = __src.col;
+        var dst = new Mat(row, col);
+        var data = dst.data,
+                data2 = __src.data;
+        var pix1, pix2, pix = __src.row * __src.col * 4;
+        while (pix) {
+            data[pix -= 4] = data[pix1 = pix + 1] = data[pix2 = pix + 2] = (data2[pix] * 299 + data2[pix1] * 587 + data2[pix2] * 114) / 1000;
+            data[pix + 3] = data2[pix + 3];
+        }
+    } else {
+        return src;
+    }
+    dst.type = "CV_GRAY"
+    grey_matrix = dst;
+    return dst;
+}
+
+function mat2imgshow(__imgMat, canvas, ctx) {
+    var width = __imgMat.col,
+            height = __imgMat.row;
+    canvas.width = width;
+    canvas.height = height;
+    var imageData = ctx.createImageData(width, height);
+    imageData.data.set(__imgMat.data);
+    ctx.putImageData(imageData, 0, 0);
+}
+
+function get_zft_data(__src)
+{
+    if (__src.type && __src.type === "CV_RGBA") {
+        var row = __src.row,
+                col = __src.col;
+        var data2 = __src.data;
+        var pix1, pix2, pix = __src.row * __src.col * 4;
+    }
+    else if (__src.type && __src.type === "CV_GRAY") {
+        var gray_data = Array(256);
+        var i = 0;
+        for (i = 0; i < 256; i++)
+            gray_data[i] = 0;
+        var row = __src.row,
+                col = __src.col;
+        var data2 = __src.data;
+        var pix = __src.row * __src.col * 4;
+
+        while (pix) {
+            pix -= 4;
+            var aa = data2[pix];
+            gray_data[aa]++;
+        }
+    }
+    return gray_data;
+}
+
+function sczft(data) {
+    var data1 = new Array();
+    var data2 = data;
+    var i = 0;
+    for (i = 0; i < 256; i++) {
+        data1.push(i);
+    }
+    require.config({
+        paths: {
+            echarts: 'js'
+        }
+    });
+    require(
+            [
+                'echarts',
+                'echarts/chart/bar',
+                'echarts/chart/line'
+            ],
+            function (ec) {
+                //--- 折柱 ---
+                var myChart = ec.init(document.getElementById('zhifangtu'));
+                myChart.setOption({
+                    title: {
+                        text: '变换后直方图',
+                        subtext: '图片'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ['像素个数']
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            mark: {show: true},
+                            dataView: {show: true, readOnly: false},
+                            magicType: {show: true, type: ['line', 'bar']},
+                            restore: {show: true},
+                            saveAsImage: {show: true}
+                        }
+                    },
+                    calculable: true,
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: data1
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value'
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '像素个数',
+                            type: 'bar',
+                            data: data2,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'},
+                                    {type: 'min', name: '最小值'}
+                                ]
+                            },
+                            markLine: {
+                                data: [
+                                    {type: 'average', name: '平均值'}
+                                ]
+                            }
+                        }
+                    ]
+                });
+            }
+    );
+}

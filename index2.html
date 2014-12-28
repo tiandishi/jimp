@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta charset="utf-8">
+        <title>jimp</title>
+        <meta name="description" content="js图形处理">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/main.css">
+    </head>
+    <body ng-app="jimp">
+        <div class="container">
+            <div class="row">
+                <nav class="navbar navbar-default" role="navigation">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="index.html">jimp</a>
+                    </div>
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown" ng-controller="file_manage_ctl">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">文件<b class="caret"></b></a>
+                                <ul class="dropdown-menu menu-top">
+                                    <li><a ng-click="file_open()">打开文件</a></li>
+                                    <li><a href="/dropdown/label2">保存文件</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="/dropdown/label4">清除屏幕</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="/dropdown/label5">其他</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown" ng-controller="gray_img_ctl">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">灰度处理<b class="caret"></b></a>
+
+                                <ul class="dropdown-menu menu-top">
+                                    <li ng-click="img_to_gray()"><a>生成灰度图</a></li>
+                                    <li ng-click="test_ll()"><a>生成直方图</a></li>
+
+                                    <li class="divider"></li>
+                                    <li><a href="/dropdown/label4">直方图统计</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="/dropdown/label5">其他</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Multi Level <b class="caret"></b></a>
+                                <ul class="dropdown-menu menu-top">
+                                    <li><a href="#">Level 1</a></li>
+                                    <li class="dropdown-submenu"> <a tabindex="-1" href="#">More options</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a tabindex="-1" href="#">Level 2</a>
+                                            </li>
+                                            <li class="dropdown-submenu"> <a href="#">More..</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="#">Level 3</a>
+                                                    </li>
+                                                    <li><a href="#">Level 3</a>
+                                                    </li>
+                                                    <li class="dropdown-submenu"> <a href="#">More..</a>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a href="#">Level 4</a>
+                                                            </li>
+                                                            <li><a href="#">Level 4</a>
+                                                            </li>
+                                                            <li class="dropdown-submenu"> <a href="#">More..</a>
+                                                                <ul class="dropdown-menu">
+                                                                    <li><a href="#">Level 5</a>
+                                                                    </li>
+                                                                    <li><a href="#">Level 5</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </li>
+
+                                                        </ul>
+                                                    </li>
+
+                                                </ul>
+                                            </li>
+                                            <li><a href="#">Level 2</a>
+                                            </li>
+                                            <li><a href="#">Level 2</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="#">Level 1</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <img id="imageSource" src="images/1.jpg" alt="" />
+                </div>
+
+                <div class="col-md-6">
+                    <canvas id="grayImage"></canvas>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    原图
+                </div>
+                <div class="col-md-6" style="background-color: #00b3ee" ng-controller="huijiechange">
+                    <input type=range min=1 max=255 value=1 ng-model="huijie" ng-change="gbhj()"  >
+                    调整灰度值{{255 - huijie||1}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <canvas id="bitImage" height="700" width="500"></canvas>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    灰度直方图
+                </div>
+                <div class="col-md-6" style="background-color: #00b3ee" ng-controller="erzhitu">
+                    <input type=range min=1 max=8 value=1 ng-model="bitvalue" ng-change="scezt()"  >
+                    调整二值图{{bitvalue||1}}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <canvas id="yuzhi_img" height="700" width="500"></canvas>        
+                </div>
+                <div class="col-md-6">
+                    <div id="yzhzft" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
+                </div>
+            </div>
+            <div class="row" ng-controller="yuzhihua" > 
+                <input type=range min=1 max=255 ng-model="yuzhi" ng-change="scyzt()"  >
+                调整二阈值{{yuzhi||1}}
+            </div> 
+            <div ng-controller="line_change">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="line_change1" height="700" width="500"></canvas>        
+                    </div>
+                    <div class="col-md-6">
+                        <div id="line_zft" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
+                    </div>
+                </div>
+                <div class="row"> 
+                    <div class="col-md-6">
+                        线性公式: Y=<input type=text ng-model="line_a" ng-change="linechange()" >*X+<input type=text ng-model="line_b" ng-change="linechange()">     
+                    </div>
+                    <div class="col-md-6">
+                       变换的直方图
+                    </div>
+                </div> 
+            </div>
+        </div>
+
+
+
+        <!--Step:2 Import echarts.js-->
+        <!--Step:2 引入echarts.js-->
+        <script src="js/echarts.js"></script>
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="bower_components/angular/angular.min.js"></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="bower_components/angular-route/angular-route.min.js"></script>
+        <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+        <script src="js/jimp.js"></script>
+        <script src="js/jimp-core.js"></script>
+
+    </body>
+</html>
