@@ -26,8 +26,6 @@ jimp.controller('select_op', ['$scope',function ($scope,$location) {
     var buffer = document.createElement("canvas");
 // get the canvas context
     var c = buffer.getContext('2d');
-    
-
     var img = new Image();
     img.onload = function () {
         imgCanvas.height = img.height;

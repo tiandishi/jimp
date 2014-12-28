@@ -90,8 +90,8 @@ function color2gray(__src, max) {
 function gray2bitplane(gray_matrix, value) {
     if (gray_matrix == null)
         gray_matrix = color2gray(init_matrix, 256);
-    
-    value=value-1;
+
+    value = value - 1;
     var row = gray_matrix.row,
             col = gray_matrix.col;
     var dst = new Mat(row, col);
@@ -100,24 +100,24 @@ function gray2bitplane(gray_matrix, value) {
     var pix1, pix2, pix = gray_matrix.row * gray_matrix.col * 4;
     while (pix) {
         pix -= 4, pix1 = pix + 1, pix2 = pix + 2;
-                    var aa = data2[pix];
-                    var tmp = 1 << value;
-                    var bb = aa & tmp;
-                    if (bb > 0)
-                    {
-                        bb = 255;
-                    }
+        var aa = data2[pix];
+        var tmp = 1 << value;
+        var bb = aa & tmp;
+        if (bb > 0)
+        {
+            bb = 255;
+        }
         data[pix] = data[pix1] = data[pix2] = bb;
         data[pix + 3] = data2[pix + 3];
     }
     dst.type = "CV_GRAY";
     return dst;
 }
-function gray2yuzhitu(__src,value){
+function gray2yuzhitu(__src, value) {
     if (gray_matrix == null)
         gray_matrix = color2gray(init_matrix, 256);
-    
-    value=value-1;
+
+    value = value - 1;
     var row = gray_matrix.row,
             col = gray_matrix.col;
     var dst = new Mat(row, col);
@@ -126,12 +126,12 @@ function gray2yuzhitu(__src,value){
     var pix1, pix2, pix = gray_matrix.row * gray_matrix.col * 4;
     while (pix) {
         pix -= 4, pix1 = pix + 1, pix2 = pix + 2;
-                    var aa = data2[pix];
-                    var bb=0;
-                    if (aa > value)
-                    {
-                        bb = 255;
-                    }
+        var aa = data2[pix];
+        var bb = 0;
+        if (aa > value)
+        {
+            bb = 255;
+        }
         data[pix] = data[pix1] = data[pix2] = bb;
         data[pix + 3] = data2[pix + 3];
     }
@@ -151,9 +151,9 @@ function mat2imgshow(__imgMat, canvas, ctx) {
 
 function get_zft_data256(__src)
 {
-    var res={
-        data1:null,
-        data2:null
+    var res = {
+        data1: null,
+        data2: null
     };
     if (__src.type && __src.type === "CV_RGBA") {
         var row = __src.row,
@@ -177,19 +177,19 @@ function get_zft_data256(__src)
             gray_data[aa]++;
         }
     }
-    
-    var tmpdata=new Array(256);
-    var i=0;
-    for(i=0;i<256;i++)
+
+    var tmpdata = new Array(256);
+    var i = 0;
+    for (i = 0; i < 256; i++)
     {
-        tmpdata[i]=i;
+        tmpdata[i] = i;
     }
-    res.data1=tmpdata;
-    res.data2=gray_data;
+    res.data1 = tmpdata;
+    res.data2 = gray_data;
     return res;
 }
 
-function gray2line_change(gray_matrix,aa,bb){
+function gray2line_change(gray_matrix, aa, bb) {
     if (gray_matrix == null)
         gray_matrix = color2gray(init_matrix, 256);
     var row = gray_matrix.row,
@@ -200,9 +200,9 @@ function gray2line_change(gray_matrix,aa,bb){
     var pix1, pix2, pix = gray_matrix.row * gray_matrix.col * 4;
     while (pix) {
         pix -= 4, pix1 = pix + 1, pix2 = pix + 2;
-                    var X = data2[pix];
-                    var Y =aa*X+bb;
-                    Y=check(Y);
+        var X = data2[pix];
+        var Y = aa * X + bb;
+        Y = check(Y);
         data[pix] = data[pix1] = data[pix2] = Y;
         data[pix + 3] = data2[pix + 3];
     }
@@ -210,18 +210,19 @@ function gray2line_change(gray_matrix,aa,bb){
     return dst;
 }
 
-function check(x){
-    if(x>255)
+function check(x) {
+    if (x > 255)
         return 255;
-    else if(x<0)
+    else if (x < 0)
         return 0;
-    else return x;
+    else
+        return x;
 }
 function get_zft_data2(__src)
 {
-    var res={
-        data1:null,
-        data2:null
+    var res = {
+        data1: null,
+        data2: null
     };
     if (__src.type && __src.type === "CV_RGBA") {
         var row = __src.row,
@@ -245,24 +246,25 @@ function get_zft_data2(__src)
             gray_data[aa]++;
         }
     }
-    
-    var tmpdata1=new Array();
-    var tmpdata2=new Array();
-    var i=0;
-    for(i=0;i<256;i++)
+
+    var tmpdata1 = new Array();
+    var tmpdata2 = new Array();
+    var i = 0;
+    for (i = 0; i < 256; i++)
     {
-        if(gray_data[i]>0)
-        {tmpdata1.push(i);
-        tmpdata2.push(gray_data[i]);
-    }  
+        if (gray_data[i] > 0)
+        {
+            tmpdata1.push(i);
+            tmpdata2.push(gray_data[i]);
+        }
     }
-    res.data1=tmpdata1;
-    res.data2=tmpdata2;
+    res.data1 = tmpdata1;
+    res.data2 = tmpdata2;
     return res;
 }
 
 
-function sczft(data1,data2) {
+function sczft(data1, data2) {
     require.config({
         paths: {
             echarts: 'js'
@@ -281,7 +283,7 @@ function sczft(data1,data2) {
                     title: {
                         text: '变换后直方图',
                         subtext: '图片'
-                        
+
                     },
                     tooltip: {
                         trigger: 'axis'
@@ -332,4 +334,59 @@ function sczft(data1,data2) {
                 });
             }
     );
+}
+
+
+function applyMatrix(__src, matrix) {
+    if (__src == null)
+        __src = color2gray(init_matrix, 256);
+    var row = __src.row,
+            col = __src.col;
+    var matrixSize = Math.sqrt(matrix.length);
+    for (var i = 1; i < col - 1; i++) {
+        for (var j = 1; j < row - 1; j++) {
+
+            // temporary holders for matrix results
+            var sumR = sumG = sumB = 0;
+
+            // loop through the matrix itself
+            for (var h = 0; h < matrixSize; h++) {
+                for (var w = 0; w < matrixSize; w++) {
+
+                    // get a refence to a pixel position in the matrix
+                    var r = convertCoordinates(i + h - 1, j + w - 1, imgWidth) << 2;
+
+                    // find RGB values for that pixel
+                    var currentPixel = {
+                        r: bufferedData[r],
+                        g: bufferedData[r + 1],
+                        b: bufferedData[r + 2]
+                    };
+
+                    // apply the value from the current matrix position
+                    sumR += currentPixel.r * matrix[w + h * matrixSize];
+                    sumG += currentPixel.g * matrix[w + h * matrixSize];
+                    sumB += currentPixel.b * matrix[w + h * matrixSize];
+                }
+            }
+
+            // get a reference for the final pixel
+            var ref = convertCoordinates(i, j, imgWidth) << 2;
+            var thisPixel = {
+                r: data[ref],
+                g: data[ref + 1],
+                b: data[ref + 2]
+            };
+
+            // finally, apply the adjusted values
+            data = setRGB(data, ref,
+                    findColorDifference(amount, sumR, thisPixel.r),
+                    findColorDifference(amount, sumG, thisPixel.g),
+                    findColorDifference(amount, sumB, thisPixel.b));
+        }
+    }
+}
+
+function convertCoordinates(x, y, w) {
+    return x + (y * w);
 }
