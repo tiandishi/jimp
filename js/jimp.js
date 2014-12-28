@@ -47,69 +47,58 @@ jimp.controller('select_op', function ($scope) {
             name: "gray_img",
             label: "生成灰度图",
             filterClass: "filter-blur",
-            controlId: "controls-blur"
+            controlId: "黑白变换"
         },
         {
             name: "bitplane",
             label: "取位平面",
             filterClass: "filter-blur",
-            controlId: "controls-blur"
+            controlId: "黑白变换"
         },
         
         {
             name: "yuzhitu",
             label: "阈值二值图",
             filterClass: "filter-blur",
-            controlId: "controls-blur"
+            controlId: "黑白变换"
         },
        
         {
             name: "blur",
             label: "模糊",
             filterClass: "filter-blur",
-            controlId: "controls-blur"
+            controlId: "彩色变换"
         },
         {
             name: "edges",
             label: "边缘检测",
             filterClass: "filter-edges",
-            controlId: "controls-edges"
+            controlId: "黑白变换"
         },
         {
             name: "grayscale",
             label: "灰度拉伸",
             filterClass: "filter-grayscale",
-            controlId: "controls-grayscale"
+            controlId: "黑白变换"
         },
         {
             name: "mosaic",
             label: "马赛克",
             filterClass: "filter-mosaic",
-            controlId: "controls-mosaic"
+            controlId: "彩色变换"
         },
         {
             name: "noise",
             label: "噪声",
             filterClass: "filter-noise",
-            controlId: "controls-noise"
+            controlId: "彩色变换"
         },
-        {
-            name: "posterize",
-            label: "Posterize",
-            filterClass: "filter-posterize",
-            controlId: "controls-posterize"
-        },
+       
         {
             name: "sharpen",
-            label: "Sharpen",
+            label: "锐化",
             filterClass: "filter-sharpen",
-            controlId: "controls-sharpen"
-        },
-        {
-            name: "tint",
-            label: "Colour Tint",
-            filterClass: "filter-tint",
-            controlId: "controls-tint"
+            controlId: "彩色变换"
         }
     ];
     $scope.gray_img_change = function (gray_value) {
