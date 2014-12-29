@@ -23,18 +23,7 @@
 
                 <ul class="thumbnails" ng-controller="select_img">
                     <li ng-repeat="m in imgsrc_data" ng-class="m.class" ng-click="img_selected(m)"><img src={{m.src}} width="50" height="33" alt=""></li>
-                    <!--
-                    <li class="thumb"><img src="images/500/lighthouse.jpg" width="50" height="33" alt=""></li>
-                    <li class="thumb"><img src="images/500/staples.jpg" width="50" height="33" alt=""></li>
-                    <li class="thumb current"><img src="images/500/bee.jpg" width="50" height="33" alt=""></li>
-                    <li class="thumb"><img src="images/500/leaves.jpg" width="50" height="33" alt=""></li>
-                    <li class="thumb"><img src="images/500/louvre.jpg" width="50" height="33" alt=""></li>
-                    <li class="thumb"><img src="images/500/sign.jpg" width="50" height="33" alt=""></li>
-                    <li class="thumb"><img src="images/500/road.jpg" width="50" height="33" alt=""></li>
-                    <li class="thumb"><img src="images/500/jordan.jpg" width="50" height="33" alt=""></li>
-                    <li class="thumb"><img src="images/500/stones.jpg" width="50" height="33" alt=""></li>
-                    -->
-                    
+                   
                 </ul>
                 <div id="filter-target">
                     <canvas id="img_canvas"></canvas>
@@ -104,11 +93,15 @@
                     </label>
                 </div>
                 <div class="controls" id="controls-edges" ng-if="selected.name == 'fly_bh'">
+                    <div ng-if="fly_type==1"> 低通频
+                    <input  ng-model="ltp" />高通频
+                    <input  ng-model="htp" />
+                    </div>
                     <label>
                         变换类型
-                    <input type="radio" ng-click="fly_bh(1)" ng-model="fly_type" value="1"/> 频率
-                    <input type="radio" ng-click="fly_bh(2)" ng-model="fly_type" value="2"/> 高通滤波 
-                    <input type="radio" ng-click="fly_bh(3)" ng-model="fly_type" value="3"/> 高通滤波 
+                    <input type="radio" ng-click="fly_bh(0,255,1)" ng-model="fly_type" value="1"/> 频率
+                    <input type="radio" ng-click="fly_bh(0,255,2)" ng-model="fly_type" value="2"/> 高通滤波 
+                    <input type="radio" ng-click="fly_bh(0,255,3)" ng-model="fly_type" value="3"/> 高通滤波 
                     </label>
                 </div>
 
