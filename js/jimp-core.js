@@ -81,7 +81,7 @@ function color2gray(__src, max) {
         return src;
     }
     dst.type = "CV_GRAY";
-    if (max = 256)
+    if (max == 256)
         gray_matrix = dst;
     return dst;
 }
@@ -117,7 +117,6 @@ function gray2yuzhitu(__src, value) {
     if (gray_matrix == null)
         gray_matrix = color2gray(init_matrix, 256);
 
-    value = value - 1;
     var row = gray_matrix.row,
             col = gray_matrix.col;
     var dst = new Mat(row, col);
