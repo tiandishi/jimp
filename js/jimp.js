@@ -69,6 +69,12 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
                 controlId: "黑白变换"
             },
             {
+                name: "fly_bh",
+                label: "傅立叶变换",
+                filterClass: "filter-edges",
+                controlId: "黑白变换"
+            },
+            {
                 name: "blur",
                 label: "模糊",
                 filterClass: "filter-blur",
@@ -80,6 +86,8 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
                 filterClass: "filter-edges",
                 controlId: "黑白变换"
             },
+            
+            
             {
                 name: "grayscale",
                 label: "灰度拉伸",
@@ -143,6 +151,27 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
             var zdtdata = get_zft_data256(dstMat);
             sczft(zdtdata.data1, zdtdata.data2);
         };
+        
+        $scope.fly_bh = function (value) {
+            
+           if(value==1)
+           {
+              var datarray=mat2array(gray_matrix); 
+              // 数组傅立叶
+              var flydata=fft2(datarray.data,datarray.width,datarray.height);
+              
+              //逆变换
+              var pp_data=ifft(flydata);
+              alert("sd");
+           }
+         //   var aa = parseFloat(line_a) || 1;
+           // var bb = parseFloat(line_b) || 0;
+          //  var dstMat = gray2line_change(gray_matrix, aa, bb);
+          //  mat2imgshow(dstMat, imgCanvas, imgCtx);
+          //  var zdtdata = get_zft_data256(dstMat);
+          //  sczft(zdtdata.data1, zdtdata.data2);
+        };
+        
     }]);
 
 
