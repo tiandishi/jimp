@@ -155,10 +155,12 @@ jimp.controller('select_op', ['$scope', function($scope, $location) {
     };
 
     $scope.fly_bh = function(a,b,value) {
+        var pra=parseInt(a);
+        var prb=parseInt(b);
         if(value==1)
         init1(imgCanvas,init_img_src);
        if(value==2)
-           init2();
+           init2(pra,prb);
        if(value==3)
            init3();
        if(value==4)

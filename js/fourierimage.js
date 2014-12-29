@@ -65,7 +65,7 @@ function init1(mycanvas,imgsrc) {
     };
 }
 
-function init2() {
+function init2(pra,prb) {
 
 
 
@@ -84,8 +84,8 @@ function init2() {
     }
 
     //apply a low or high pass filter
-    var lpr = parseInt(0); //low pass radius
-    var hpr = parseInt(255); //high " "
+    var lpr = parseInt(pra); //low pass radius
+    var hpr = parseInt(prb); //high " "
     var N = dims[1], M = dims[0];
     for (var k = 0; k < N; k++) {
         for (var l = 0; l < M; l++) {
