@@ -77,6 +77,18 @@
                         <input type="range" name="data-pb-blur-amount" min="0" max="10" step="0.05" value="0">
                     </label>
                 </div>
+                <div class="controls" ng-if="selected.name == 'not_line_change'">
+                    <label>
+                        <div ng-if="not_line_value==1">非线性变换:Y=X+(0.8*X*(255-X))/255
+                        </div>
+                        <div ng-if="not_line_value==2">非线性变换:Y=X*X/255
+                        </div>
+                        
+                        <input type="radio" ng-click="not_line_change(1)" ng-model="not_line_value" value="1"/> 第一种
+                        <input type="radio" ng-click="not_line_change(2)" ng-model="not_line_value" value="2"/> 二阶点运算
+                        
+                    </label>
+                </div>
 
                 <div class="controls" ng-if="selected.name == 'yuzhitu'">
                     <label>

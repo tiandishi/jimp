@@ -63,6 +63,12 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
                 controlId: "黑白变换"
             },
             {
+                name: "not_line_change",
+                label: "非线性变换",
+                filterClass: "filter-blur",
+                controlId: "黑白变换"
+            },
+            {
                 name: "blur",
                 label: "模糊",
                 filterClass: "filter-blur",
@@ -99,6 +105,13 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
                 controlId: "彩色变换"
             }
         ];
+        $scope.not_line_change=function(value){
+            var vv=parseInt(value)||1;
+            var dstMat = noline_change1(gray_matrix,vv);
+            mat2imgshow(dstMat, imgCanvas, imgCtx);
+            var zdtdata = get_zft_data2(dstMat);
+            sczft(zdtdata.data1, zdtdata.data2);
+        };
         $scope.gray_img_change = function (gray_value) {
             var value = parseInt(gray_value);
             var dstMat = color2gray(init_matrix, value);

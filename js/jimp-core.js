@@ -4,7 +4,7 @@ var buffer = document.createElement("canvas");
 // get the canvas context
 var c = buffer.getContext('2d');
 var imgCanvas = document.getElementById("img_canvas");
-    var imgCtx = imgCanvas.getContext("2d");
+var imgCtx = imgCanvas.getContext("2d");
 function Mat(__row, __col, __data, __buffer) {
     this.row = __row || 0;
     this.col = __col || 0;
@@ -55,7 +55,7 @@ function get_img_mat(imgsrc)
         gray_matrix = null;
     };
     img.src = imgsrc;
-    
+
 }
 
 
@@ -211,7 +211,30 @@ function gray2line_change(gray_matrix, aa, bb) {
     dst.type = "CV_GRAY";
     return dst;
 }
-
+function noline_change1(gray_matrix,vv){
+    if (gray_matrix == null)
+        gray_matrix = color2gray(init_matrix, 256);
+    var row = gray_matrix.row,
+            col = gray_matrix.col;
+    var dst = new Mat(row, col);
+    var data = dst.data,
+            data2 = gray_matrix.data;
+    var pix1, pix2, pix = gray_matrix.row * gray_matrix.col * 4;
+    while (pix) {
+        pix -= 4, pix1 = pix + 1, pix2 = pix + 2;
+        var X = data2[pix];
+        var Y=0;
+        if(vv==1)
+         Y =  X + 0.8*X*(255-X)/255;
+        else if(vv==2)
+            Y=X*X/255;
+        Y = check(Y);
+        data[pix] = data[pix1] = data[pix2] = Y;
+        data[pix + 3] = data2[pix + 3];
+    }
+    dst.type = "CV_GRAY";
+    return dst;
+}
 function check(x) {
     if (x > 255)
         return 255;
@@ -307,12 +330,32 @@ function sczft(data1, data2) {
                     xAxis: [
                         {
                             type: 'category',
-                            data: data1
+                            data: data1,
+                            axisLabel: {
+                                show: true,
+                                 rotate: 45,
+                                interval: 'auto', // {number}
+                                textStyle: {
+                                    color: 'white',
+                                    
+                                    fontFamily: 'sans-serif',
+                                    fontSize: 10
+                                }
+                            }
                         }
                     ],
                     yAxis: [
                         {
-                            type: 'value'
+                            type: 'value',
+                            axisLabel: {
+                                show: true,
+                                interval: 'auto', // {number}
+                                textStyle: {
+                                    color: 'white',
+                                    fontFamily: 'sans-serif',
+                                    fontSize: 10
+                                }
+                            }
                         }
                     ],
                     series: [
