@@ -3,7 +3,8 @@ var gray_matrix = null;
 var buffer = document.createElement("canvas");
 // get the canvas context
 var c = buffer.getContext('2d');
-
+var imgCanvas = document.getElementById("img_canvas");
+    var imgCtx = imgCanvas.getContext("2d");
 function Mat(__row, __col, __data, __buffer) {
     this.row = __row || 0;
     this.col = __col || 0;
@@ -45,14 +46,16 @@ function amt_to_gray(img_mat) {
 }
 
 
-function get_img_mat(mat)
+function get_img_mat(imgsrc)
 {
     var img = new Image();
     img.onload = function () {
         var myMat = imread(img);
         init_matrix = myMat;
+        gray_matrix = null;
     };
-    img.src = "images/1.jpg";
+    img.src = imgsrc;
+    
 }
 
 

@@ -20,119 +20,197 @@ jimp.service('imgdata', ['$rootScope', function ($rootScope) {
         };
         return service;
     }]);
-jimp.controller('select_op', ['$scope',function ($scope,$location) {
-    var imgCanvas = document.getElementById("img_canvas");
-    var imgCtx = imgCanvas.getContext("2d");
-    var buffer = document.createElement("canvas");
+jimp.controller('select_op', ['$scope', function ($scope, $location) {
+        var buffer = document.createElement("canvas");
 // get the canvas context
-    var c = buffer.getContext('2d');
-    var img = new Image();
-    img.onload = function () {
-        imgCanvas.height = img.height;
-        imgCanvas.width = img.width;
-        imgCtx.drawImage(img, 0, 0);
-        var imgdata = imgCtx.getImageData(0, 0, imgCanvas.width, imgCanvas.height);
-        var data = imgdata.data;
-        imgCtx.putImageData(imgdata, 0, 0);
-    };
+        var c = buffer.getContext('2d');
+        var img = new Image();
+        img.onload = function () {
+            imgCanvas.height = img.height;
+            imgCanvas.width = img.width;
+            imgCtx.drawImage(img, 0, 0);
+            var imgdata = imgCtx.getImageData(0, 0, imgCanvas.width, imgCanvas.height);
+            var data = imgdata.data;
+            imgCtx.putImageData(imgdata, 0, 0);
+        };
 
-    img.src = "images/1.jpg";
-    var matt = null;
-    get_img_mat(matt);
-    $scope.selected = '';
-    $scope.operations = [
+        img.src = "images/1.jpg";
+        get_img_mat("images/1.jpg");
+        $scope.selected = '';
+        $scope.operations = [
+            {
+                name: "gray_img",
+                label: "生成灰度图",
+                filterClass: "filter-blur",
+                controlId: "黑白变换"
+            },
+            {
+                name: "bitplane",
+                label: "取位平面",
+                filterClass: "filter-blur",
+                controlId: "黑白变换"
+            },
+            {
+                name: "yuzhitu",
+                label: "阈值二值图",
+                filterClass: "filter-blur",
+                controlId: "黑白变换"
+            },
+            {
+                name: "gray_line_change",
+                label: "线性变换",
+                filterClass: "filter-blur",
+                controlId: "黑白变换"
+            },
+            {
+                name: "blur",
+                label: "模糊",
+                filterClass: "filter-blur",
+                controlId: "彩色变换"
+            },
+            {
+                name: "edges",
+                label: "边缘检测",
+                filterClass: "filter-edges",
+                controlId: "黑白变换"
+            },
+            {
+                name: "grayscale",
+                label: "灰度拉伸",
+                filterClass: "filter-grayscale",
+                controlId: "黑白变换"
+            },
+            {
+                name: "mosaic",
+                label: "马赛克",
+                filterClass: "filter-mosaic",
+                controlId: "彩色变换"
+            },
+            {
+                name: "noise",
+                label: "噪声",
+                filterClass: "filter-noise",
+                controlId: "彩色变换"
+            },
+            {
+                name: "sharpen",
+                label: "锐化",
+                filterClass: "filter-sharpen",
+                controlId: "彩色变换"
+            }
+        ];
+        $scope.gray_img_change = function (gray_value) {
+            var value = parseInt(gray_value);
+            var dstMat = color2gray(init_matrix, value);
+            mat2imgshow(dstMat, imgCanvas, imgCtx);
+            var zdtdata = get_zft_data256(dstMat);
+            sczft(zdtdata.data1, zdtdata.data2);
+        };
+        $scope.bitplane_change = function (bit_value) {
+            var value = parseInt(bit_value);
+            var dstMat = gray2bitplane(gray_matrix, value);
+            mat2imgshow(dstMat, imgCanvas, imgCtx);
+            var zdtdata = get_zft_data2(dstMat);
+            sczft(zdtdata.data1, zdtdata.data2);
+        };
+
+        $scope.yuzhi_change = function (yuzhi_value) {
+            var value = parseInt(yuzhi_value);
+            var dstMat = gray2yuzhitu(gray_matrix, value);
+            mat2imgshow(dstMat, imgCanvas, imgCtx);
+            var zdtdata = get_zft_data2(dstMat);
+            sczft(zdtdata.data1, zdtdata.data2);
+        };
+
+        $scope.line_change = function (line_a, line_b) {
+            var aa = parseFloat(line_a) || 1;
+            var bb = parseFloat(line_b) || 0;
+            var dstMat = gray2line_change(gray_matrix, aa, bb);
+            mat2imgshow(dstMat, imgCanvas, imgCtx);
+            var zdtdata = get_zft_data256(dstMat);
+            sczft(zdtdata.data1, zdtdata.data2);
+        };
+    }]);
+
+
+
+jimp.controller('select_img', function ($scope, $location) {
+    $scope.imgsrc_data = [
         {
-            name: "gray_img",
-            label: "生成灰度图",
-            filterClass: "filter-blur",
-            controlId: "黑白变换"
+            name: "lighthouse",
+            class: "thumb",
+            src: "images/500/lighthouse.jpg",
+            selected: "false"
         },
         {
-            name: "bitplane",
-            label: "取位平面",
-            filterClass: "filter-blur",
-            controlId: "黑白变换"
-        },
-        
-        {
-            name: "yuzhitu",
-            label: "阈值二值图",
-            filterClass: "filter-blur",
-            controlId: "黑白变换"
+            name: "staples",
+            class: "thumb",
+            src: "images/500/staples.jpg",
+            selected: "false"
         },
         {
-            name: "gray_line_change",
-            label: "线性变换",
-            filterClass: "filter-blur",
-            controlId: "黑白变换"
+            name: "bee",
+            class: "thumb",
+            src: "images/500/bee.jpg",
+            selected: "false"
         },
         {
-            name: "blur",
-            label: "模糊",
-            filterClass: "filter-blur",
-            controlId: "彩色变换"
+            name: "leaves",
+            class: "thumb",
+            src: "images/500/leaves.jpg",
+            selected: "false"
         },
         {
-            name: "edges",
-            label: "边缘检测",
-            filterClass: "filter-edges",
-            controlId: "黑白变换"
+            name: "louvre",
+            class: "thumb",
+            src: "images/500/louvre.jpg",
+            selected: "false"
         },
         {
-            name: "grayscale",
-            label: "灰度拉伸",
-            filterClass: "filter-grayscale",
-            controlId: "黑白变换"
+            name: "sign",
+            class: "thumb",
+            src: "images/500/sign.jpg",
+            selected: "false"
         },
         {
-            name: "mosaic",
-            label: "马赛克",
-            filterClass: "filter-mosaic",
-            controlId: "彩色变换"
+            name: "road",
+            class: "thumb",
+            src: "images/500/road.jpg",
+            selected: "false"
         },
         {
-            name: "noise",
-            label: "噪声",
-            filterClass: "filter-noise",
-            controlId: "彩色变换"
+            name: "jordan",
+            class: "thumb",
+            src: "images/500/jordan.jpg",
+            selected: "false"
         },
-       
         {
-            name: "sharpen",
-            label: "锐化",
-            filterClass: "filter-sharpen",
-            controlId: "彩色变换"
+            name: "stones",
+            src: "images/500/stones.jpg",
+            selected: "false",
+            class: "thumb"
+        },
+        {
+            name: "meinv",
+            src: "images/1.jpg",
+            selected: "false",
+            class: "thumb"
         }
+
     ];
-    $scope.gray_img_change = function (gray_value) {
-        var value= parseInt(gray_value);
-        var dstMat = color2gray(init_matrix,value);
-        mat2imgshow(dstMat, imgCanvas, imgCtx);
-        var zdtdata=get_zft_data256(dstMat);
-        sczft(zdtdata.data1,zdtdata.data2);
+
+    $scope.img_selected = function (m) {
+        m.class = "thumb current";
+        var img = new Image();
+        img.onload = function () {
+            imgCanvas.height = img.height;
+            imgCanvas.width = img.width;
+            imgCtx.drawImage(img, 0, 0);
+            var imgdata = imgCtx.getImageData(0, 0, imgCanvas.width, imgCanvas.height);
+            var data = imgdata.data;
+            imgCtx.putImageData(imgdata, 0, 0);
+            get_img_mat(m.src);
+        };
+        img.src = m.src;
     };
-    $scope.bitplane_change=function (bit_value){
-        var value= parseInt(bit_value);
-        var dstMat = gray2bitplane(gray_matrix,value);
-        mat2imgshow(dstMat, imgCanvas, imgCtx);
-        var zdtdata=get_zft_data2(dstMat);
-       sczft(zdtdata.data1,zdtdata.data2);
-    };
-    
-    $scope.yuzhi_change=function(yuzhi_value){
-        var value= parseInt(yuzhi_value);
-        var dstMat = gray2yuzhitu(gray_matrix,value);
-        mat2imgshow(dstMat, imgCanvas, imgCtx);
-        var zdtdata=get_zft_data2(dstMat);
-        sczft(zdtdata.data1,zdtdata.data2);
-    };
-   
-    $scope.line_change=function(line_a,line_b){
-        var aa= parseFloat(line_a)||1;
-        var bb= parseFloat(line_b)||0;
-       var dstMat = gray2line_change(gray_matrix,aa,bb);
-       mat2imgshow(dstMat, imgCanvas, imgCtx);
-       var zdtdata=get_zft_data256(dstMat);
-       sczft(zdtdata.data1,zdtdata.data2);
-    };
-}]);
+});

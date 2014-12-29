@@ -21,7 +21,8 @@
         <div ng-controller="select_op">
             <div id="interaction" >
 
-                <ul class="thumbnails">
+                <ul class="thumbnails" ng-controller="select_img">
+                    <li ng-repeat="m in imgsrc_data" ng-class="m.class" ng-click="img_selected(m)"><img src={{m.src}} width="50" height="33" alt=""></li>
                     <!--
                     <li class="thumb"><img src="images/500/lighthouse.jpg" width="50" height="33" alt=""></li>
                     <li class="thumb"><img src="images/500/staples.jpg" width="50" height="33" alt=""></li>
@@ -33,6 +34,7 @@
                     <li class="thumb"><img src="images/500/jordan.jpg" width="50" height="33" alt=""></li>
                     <li class="thumb"><img src="images/500/stones.jpg" width="50" height="33" alt=""></li>
                     -->
+                    
                 </ul>
                 <div id="filter-target">
                     <canvas id="img_canvas"></canvas>
