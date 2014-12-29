@@ -100,8 +100,9 @@
                     <label>
                         变换类型
                     <input type="radio" ng-click="fly_bh(0,255,1)" ng-model="fly_type" value="1"/> 频率
-                    <input type="radio" ng-click="fly_bh(0,255,2)" ng-model="fly_type" value="2"/> 高通滤波 
+                    <input type="radio" ng-click="fly_bh(0,255,2)" ng-model="fly_type" value="2"/> 低通滤波 
                     <input type="radio" ng-click="fly_bh(0,255,3)" ng-model="fly_type" value="3"/> 高通滤波 
+                     <input type="radio" ng-click="fly_bh(0,255,4)" ng-model="fly_type" value="4"/> AAA 
                     </label>
                 </div>
 
@@ -190,5 +191,6 @@
         <script src="bower_components/angular-route/angular-route.min.js"></script>
         <script src="js/jimp-core.js"></script>
         <script src="js/jimp.js"></script>   
+        <script src="js/fourierimage.js"></script>   
     </body> 
 </html>

@@ -155,63 +155,14 @@ jimp.controller('select_op', ['$scope', function($scope, $location) {
     };
 
     $scope.fly_bh = function(a,b,value) {
-
-        if (value == 1) {
-            var datarray = mat2flyarray(gray_matrix);
-            // 数组傅立叶
-            var h_hats = [];
-            FFT(h_hats, datarray);
-            h_hats = shiftFFT(h_hats);
-            var maxMagnitude = 0;
-            for (var ai = 0; ai < h_hats.length; ai++) {  
-                console.log(ai);
-                var qa=h_hats[ai].real;
-                var qb=h_hats[ai].imag;
-                var mag = Math.sqrt(qa*qa+qb*qb);
-                
-                if (mag > maxMagnitude) {
-                    maxMagnitude = mag;
-                }
-            }
-            alert("dsfsdfsd");
-            var lpr = parseInt(a); //low pass radius
-            var hpr = parseInt(b); //high " "
-            var N = dims[1],
-                M = dims[0];
-            for (var k = 0; k < N; k++) {
-                for (var l = 0; l < M; l++) {
-                    var idx = k * M + l;
-                    var dist = Math.pow(k - M / 2, 2) + Math.pow(l - N / 2, 2);
-                    if (dist > lpr * lpr && isNaN(hpr) ||
-                        dist < hpr * hpr && isNaN(lpr) ||
-                        dist < lpr * lpr && !isNaN(lpr) && !isNaN(hpr) ||
-                        dist > hpr * hpr && !isNaN(lpr) && !isNaN(hpr)) {
-                        h_hats[idx] = new Complex(0, 0);
-                    }
-                }
-            }
-            $h = function(k, l) {
-                if (arguments.length === 0) return h_hats;
-
-                var idx = k * dims[0] + l;
-                return h_hats[idx];
-            };
-
-            var currImageData = imgCtx.getImageData(0, 0, dims[0], dims[1]);
-            var logOfMaxMag = Math.log(cc * maxMagnitude + 1);
-            for (var k = 0; k < dims[1]; k++) {
-                for (var l = 0; l < dims[0]; l++) {
-                    var idxInPixels = 4 * (dims[0] * k + l);
-                    currImageData.data[idxInPixels + 3] = 255; //full alpha
-                    var color = Math.log(cc * $h(k, l).magnitude() + 1);
-                    color = Math.round(255 * (color / logOfMaxMag));
-                    for (var c = 0; c < 3; c++) { //RGB are the same, lol c++
-                        currImageData.data[idxInPixels + c] = color;
-                    }
-                }
-            }
-            imgCtx.putImageData(currImageData, 0, 0);
-        }
+        if(value==1)
+        init1(imgCanvas,init_img_src);
+       if(value==2)
+           init2();
+       if(value==3)
+           init3();
+       if(value==4)
+           init4();
         //   var aa = parseFloat(line_a) || 1;
         // var bb = parseFloat(line_b) || 0;
         //  var dstMat = gray2line_change(gray_matrix, aa, bb);
@@ -276,7 +227,24 @@ jimp.controller('select_img', function($scope, $location) {
             selected: "false",
             class: "thumb"
         }
-
+        , {
+            name: "CS",
+            src: "images/cs.png",
+            selected: "false",
+            class: "thumb"
+        }
+        , {
+            name: "circle",
+            src: "images/circle.png",
+            selected: "false",
+            class: "thumb"
+        }
+        , {
+            name: "grace",
+            src: "images/grace.png",
+            selected: "false",
+            class: "thumb"
+        }
     ];
 
     $scope.img_selected = function(m) {
@@ -294,5 +262,6 @@ jimp.controller('select_img', function($scope, $location) {
             get_img_mat(m.src);
         };
         img.src = m.src;
+        init_img_src=m.src;
     };
 });
