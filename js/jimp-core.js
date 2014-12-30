@@ -1,3 +1,8 @@
+var CV_BORDER_CONSTANT=1;
+var CV_BORDER_REPLICATE=2;
+var CV_BORDER_REFLECT_101=4;
+var CV_BORDER_REFLECT=3;
+var CV_BORDER_WRAP=5;
 var init_matrix = null;
 var gray_matrix = null;
 var init_img_src=null;
@@ -156,12 +161,7 @@ function get_zft_data256(__src) {
         data1: null,
         data2: null
     };
-    if (__src.type && __src.type === "CV_RGBA") {
-        var row = __src.row,
-            col = __src.col;
-        var data2 = __src.data;
-        var pix1, pix2, pix = __src.row * __src.col * 4;
-    } else if (__src.type && __src.type === "CV_GRAY") {
+    if (__src.type) {
         var gray_data = Array(256);
         var i = 0;
         for (i = 0; i < 256; i++)
@@ -190,7 +190,7 @@ function get_zft_data256(__src) {
 
 function gray2line_change(gray_matrix, aa, bb) {
     if (gray_matrix == null)
-        gray_matrix = color2gray(init_matrix, 256);
+        gray_matrix = color2gray(gray_matrix, 256);
     var row = gray_matrix.row,
         col = gray_matrix.col;
     var dst = new Mat(row, col);
@@ -559,3 +559,349 @@ function sct() {
 
 
 }
+
+
+
+function junzhi_blur(__src, __size1, __size2, __borderType){
+    if(__src.type){
+        var height = __src.row,
+            width = __src.col,
+            dst = new Mat(height, width),
+            dstData = dst.data;
+        var size1 = __size1 || 3,
+            size2 = __size2 || size1,
+            size = size1 * size2;
+        if(size1 % 2 !== 1 || size2 % 2 !== 1){
+            console.error("size大小必须是奇数");
+            return __src;
+        }
+        var startX = Math.floor(size1 / 2),
+            startY = Math.floor(size2 / 2);
+        var withBorderMat = copyMakeBorder(__src, startY, startX, 0, 0, __borderType),
+            mData = withBorderMat.data,
+            mWidth = withBorderMat.col;
+        
+        var newValue, nowX, offsetY, offsetI;
+        var i, j, c, y, x;
+        
+        for(i = height; i--;){
+            offsetI = i * width;
+            for(j = width; j--;){
+                for(c = 3; c--;){
+                    newValue = 0;
+                    for(y = size2; y--;){
+                        offsetY = (y + i) * mWidth * 4;
+                        for(x = size1; x--;){
+                            nowX = (x + j) * 4 + c;
+                            newValue += mData[offsetY + nowX];
+                        }
+                    }
+                    dstData[(j + offsetI) * 4 + c] = newValue / size;
+                }
+                dstData[(j + offsetI) * 4 + 3] = mData[offsetY + startY * mWidth * 4 + (j + startX) * 4 + 3];
+            }
+        }
+        
+    }else{
+        console.error("不支持类型。");
+    }
+    return dst;
+}
+
+
+function copyMakeBorder(__src, __top, __left, __bottom, __right, __borderType, __value){
+  
+    if(__borderType === CV_BORDER_CONSTANT){
+        return copyMakeConstBorder_8U(__src, __top, __left, __bottom, __right, __value);
+    }else{
+        return copyMakeBorder_8U(__src, __top, __left, __bottom, __right, __borderType);
+    }
+};
+
+function copyMakeBorder(__src, __top, __left, __bottom, __right, __borderType, __value){
+    if(__src.type != "CV_RGBA"){
+        console.error("不支持类型！");
+    }
+    if(__borderType === CV_BORDER_CONSTANT){
+        return copyMakeConstBorder_8U(__src, __top, __left, __bottom, __right, __value);
+    }else{
+        return copyMakeBorder_8U(__src, __top, __left, __bottom, __right, __borderType);
+    }
+};
+
+
+function borderInterpolate(__p, __len, __borderType){
+    if(__p < 0 || __p >= __len){
+        switch(__borderType){
+            case CV_BORDER_REPLICATE:
+                __p = __p < 0 ? 0 : __len - 1;
+                break;
+            case CV_BORDER_REFLECT:
+            case CV_BORDER_REFLECT_101:
+                var delta = __borderType == CV_BORDER_REFLECT_101;
+                if(__len == 1)
+                    return 0;
+                do{
+                    if(__p < 0)
+                        __p = -__p - 1 + delta;
+                    else
+                        __p = __len - 1 - (__p - __len) - delta;
+                }while(__p < 0 || __p >= __len)
+                break;
+            case CV_BORDER_WRAP:
+                if(__p < 0)
+                    __p -= (((__p - __len + 1) / __len) | 0) * __len;
+                if(__p >= __len)
+                    __p %= __len;
+                break;
+            case CV_BORDER_CONSTANT:
+                __p = -1;
+            default:
+                error(arguments.callee, UNSPPORT_BORDER_TYPE/* {line} */);
+        }
+    }
+    return __p;
+};
+
+function copyMakeBorder_8U(__src, __top, __left, __bottom, __right, __borderType){
+    var i, j;
+    var width = __src.col,
+        height = __src.row;
+    var top = __top,
+        left = __left || __top,
+        right = __right || left,
+        bottom = __bottom || top,
+        dstWidth = width + left + right,
+        dstHeight = height + top + bottom,
+        borderType = borderType || CV_BORDER_REFLECT;
+    var buffer = new ArrayBuffer(dstHeight * dstWidth * 4),
+        tab = new Uint32Array(left + right);
+    
+    for(i = 0; i < left; i++){
+        tab[i] = borderInterpolate(i - left, width, __borderType);
+    }
+    for(i = 0; i < right; i++){
+        tab[i + left] = borderInterpolate(width + i, width, __borderType);
+    }
+    
+    var tempArray, data;
+    
+    for(i = 0; i < height; i++){
+        tempArray = new Uint32Array(buffer, (i + top) * dstWidth * 4, dstWidth);
+        data = new Uint32Array(__src.buffer, i * width * 4, width);
+        for(j = 0; j < left; j++)
+            tempArray[j] = data[tab[j]];
+        for(j = 0; j < right; j++)
+            tempArray[j + width + left] = data[tab[j + left]];
+        tempArray.set(data, left);
+    }
+    
+    var allArray = new Uint32Array(buffer);
+    for(i = 0; i < top; i++){
+        j = borderInterpolate(i - top, height, __borderType);
+        tempArray = new Uint32Array(buffer, i * dstWidth * 4, dstWidth);
+        tempArray.set(allArray.subarray((j + top) * dstWidth, (j + top + 1) * dstWidth));
+    }
+    for(i = 0; i < bottom; i++){
+        j = borderInterpolate(i + height, height, __borderType);
+        tempArray = new Uint32Array(buffer, (i + top + height) * dstWidth * 4, dstWidth);
+        tempArray.set(allArray.subarray((j + top) * dstWidth, (j + top + 1) * dstWidth));
+    }
+    
+    return new Mat(dstHeight, dstWidth, new Uint8ClampedArray(buffer));
+}
+
+function copyMakeConstBorder_8U(__src, __top, __left, __bottom, __right, __value){
+    var i, j;
+    var width = __src.col,
+        height = __src.row;
+    var top = __top,
+        left = __left || __top,
+        right = __right || left,
+        bottom = __bottom || top,
+        dstWidth = width + left + right,
+        dstHeight = height + top + bottom,
+        value = __value || [0, 0, 0, 255];
+    var constBuf = new ArrayBuffer(dstWidth * 4),
+        constArray = new Uint8ClampedArray(constBuf);
+        buffer = new ArrayBuffer(dstHeight * dstWidth * 4);
+    
+    for(i = 0; i < dstWidth; i++){
+        for( j = 0; j < 4; j++){
+            constArray[i * 4 + j] = value[j];
+        }
+    }
+    
+    constArray = new Uint32Array(constBuf);
+    var tempArray;
+    
+    for(i = 0; i < height; i++){
+        tempArray = new Uint32Array(buffer, (i + top) * dstWidth * 4, left);
+        tempArray.set(constArray.subarray(0, left));
+        tempArray = new Uint32Array(buffer, ((i + top + 1) * dstWidth - right) * 4, right);
+        tempArray.set(constArray.subarray(0, right));
+        tempArray = new Uint32Array(buffer, ((i + top) * dstWidth + left) * 4, width);
+        tempArray.set(new Uint32Array(__src.buffer, i * width * 4, width));
+    }
+    
+    for(i = 0; i < top; i++){
+        tempArray = new Uint32Array(buffer, i * dstWidth * 4, dstWidth);
+        tempArray.set(constArray);
+    }
+    
+    for(i = 0; i < bottom; i++){
+        tempArray = new Uint32Array(buffer, (i + top + height) * dstWidth * 4, dstWidth);
+        tempArray.set(constArray);
+    }
+    
+    return new Mat(dstHeight, dstWidth, new Uint8ClampedArray(buffer));
+}
+
+
+//高斯内核
+function getGaussianKernel(__n, __sigma){
+    var SMALL_GAUSSIAN_SIZE = 7,
+        smallGaussianTab = [[1],
+                            [0.25, 0.5, 0.25],
+                            [0.0625, 0.25, 0.375, 0.25, 0.0625],
+                            [0.03125, 0.109375, 0.21875, 0.28125, 0.21875, 0.109375, 0.03125]
+        ];
+        
+    var fixedKernel = __n & 2 == 1 && __n <= SMALL_GAUSSIAN_SIZE && __sigma <= 0 ? smallGaussianTab[__n >> 1] : 0;
+    
+    var sigmaX = __sigma > 0 ? __sigma : ((__n - 1) * 0.5 - 1) * 0.3 + 0.8,
+        scale2X = -0.5 / (sigmaX * sigmaX),
+        sum = 0;
+    
+    var i, x, t, kernel = [];
+    
+    for(i = 0; i < __n; i++){
+        x = i - (__n - 1) * 0.5;
+        t = fixedKernel ? fixedKernel[i] : Math.exp(scale2X * x * x);
+        kernel[i] = t;
+        sum += t;
+    }
+    
+    sum = 1 / sum;
+    
+    for(i = __n; i--;){
+        kernel[i] *= sum;
+    }
+    
+    return kernel;
+};
+
+//高斯平滑
+
+function GaussianBlur(__src, __size1, __size2, __sigma1, __sigma2, __borderType, __dst){
+    if(__src.type && __src.type == "CV_RGBA"){
+        var height = __src.row,
+            width = __src.col,
+            dst = __dst || new Mat(height, width),
+            dstData = dst.data;
+        var sigma1 = __sigma1 || 0,
+            sigma2 = __sigma2 || __sigma1;
+        var size1 = __size1 || Math.round(sigma1 * 6 + 1) | 1,
+            size2 = __size2 || Math.round(sigma2 * 6 + 1) | 1,
+            size = size1 * size2;
+        if(size1 % 2 !== 1 || size2 % 2 !== 1){
+            console.error("size必须是奇数。");
+            return __src;
+        }
+        var startX = Math.floor(size1 / 2),
+            startY = Math.floor(size2 / 2);
+        var withBorderMat = copyMakeBorder(__src, startY, startX, 0, 0, __borderType),
+            mData = withBorderMat.data,
+            mWidth = withBorderMat.col;
+            
+        var kernel1 = getGaussianKernel(size1, sigma1),
+            kernel2, 
+            kernel = new Array(size1 * size2);
+        
+        if(size1 === size2 && sigma1 === sigma2)
+            kernel2 = kernel1;
+        else
+            kernel2 = getGaussianKernel(size2, sigma2);
+        
+        var i, j, c, y, x;
+        
+        for(i = kernel2.length; i--;){
+            for(j = kernel1.length; j--;){
+                kernel[i * size1 + j] = kernel2[i] * kernel1[j];
+            }
+        }
+        
+        var newValue, nowX, offsetY, offsetI;
+        
+        for(i = height; i--;){
+            offsetI = i * width;
+            for(j = width; j--;){
+                for(c = 3; c--;){
+                    newValue = 0;
+                    for(y = size2; y--;){
+                        offsetY = (y + i) * mWidth * 4;
+                        for(x = size1; x--;){
+                            nowX = (x + j) * 4 + c;
+                            newValue += (mData[offsetY + nowX] * kernel[y * size1 + x]);
+                        }
+                    }
+                    dstData[(j + offsetI) * 4 + c] = newValue;
+                }
+                dstData[(j + offsetI) * 4 + 3] = mData[offsetY + startY * mWidth * 4 + (j + startX) * 4 + 3];
+            }
+        }
+        
+    }else{
+        console.error("不支持的类型");
+    }
+    return dst;
+}
+
+
+//中值平滑
+
+function medianBlur(__src, __size1, __size2, __borderType, __dst){
+    if(__src.type && __src.type == "CV_RGBA"){
+        var height = __src.row,
+            width = __src.col,
+            dst = __dst || new Mat(height, width),
+            dstData = dst.data;
+        var size1 = __size1 || 3,
+            size2 = __size2 || size1,
+            size = size1 * size2;
+        if(size1 % 2 !== 1 || size2 % 2 !== 1){
+            console.error("size必须是奇数");
+            return __src;
+        }
+        var startX = Math.floor(size1 / 2),
+            startY = Math.floor(size2 / 2);
+        var withBorderMat = copyMakeBorder(__src, startY, startX, 0, 0, __borderType),
+            mData = withBorderMat.data,
+            mWidth = withBorderMat.col;
+        
+        var newValue = [], nowX, offsetY, offsetI;
+        var i, j, c, y, x;
+        
+        for(i = height; i--;){
+            offsetI = i * width;
+            for(j = width; j--;){
+                for(c = 3; c--;){
+                    for(y = size2; y--;){
+                        offsetY = (y + i) * mWidth * 4;
+                        for(x = size1; x--;){
+                            nowX = (x + j) * 4 + c;
+                            newValue[y * size1 + x] = mData[offsetY + nowX];
+                        }
+                    }
+                    newValue.sort(function(a, b){return a - b;});
+                    dstData[(j + offsetI) * 4 + c] = newValue[Math.round(size / 2)];
+                }
+                dstData[(j + offsetI) * 4 + 3] = mData[offsetY + startY * mWidth * 4 + (j + startX) * 4 + 3];
+            }
+        }
+        
+    }else{
+        console.error("类型不支持");
+    }
+    return dst;
+};
