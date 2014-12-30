@@ -24,18 +24,18 @@ var h_; //h prime, the reconstructed h values
 
 /******************
  * work functions */
-function init1(mycanvas,imgsrc) {
+function init1(mycanvas, imgsrc) {
 
     //draw the initial image
     var img = new Image();
-    img.addEventListener('load', function () {
+    img.addEventListener('load', function() {
         //make each canvas the image's exact size
         dims[0] = img.width;
         dims[1] = img.height;
-        
-            mycanvas.width = dims[0], mycanvas.height = dims[1];
-            ctxs = mycanvas.getContext('2d');
-       
+
+        mycanvas.width = dims[0], mycanvas.height = dims[1];
+        ctxs = mycanvas.getContext('2d');
+
         //draw the image to the canvas
         ctxs.drawImage(img, 0, 0, img.width, img.height);
 
@@ -48,7 +48,7 @@ function init1(mycanvas,imgsrc) {
         }
 
         //initialize the h values
-        h = function (n, m) {
+        h = function(n, m) {
             if (arguments.length === 0)
                 return h_es;
 
@@ -58,14 +58,14 @@ function init1(mycanvas,imgsrc) {
 
     });
     img.src = imgsrc;
-//initialize the working variables
-    canvases = [], ctxs =null;
-    h = $h = h_ = function () {
+    //initialize the working variables
+    canvases = [], ctxs = null;
+    h = $h = h_ = function() {
         return false;
     };
 }
 
-function init2(pra,prb) {
+function init2(pra, prb) {
 
 
 
@@ -86,22 +86,23 @@ function init2(pra,prb) {
     //apply a low or high pass filter
     var lpr = parseInt(pra); //low pass radius
     var hpr = parseInt(prb); //high " "
-    var N = dims[1], M = dims[0];
+    var N = dims[1],
+        M = dims[0];
     for (var k = 0; k < N; k++) {
         for (var l = 0; l < M; l++) {
             var idx = k * M + l;
             var dist = Math.pow(k - M / 2, 2) + Math.pow(l - N / 2, 2);
             if (dist > lpr * lpr && isNaN(hpr) ||
-                    dist < hpr * hpr && isNaN(lpr) ||
-                    dist < lpr * lpr && !isNaN(lpr) && !isNaN(hpr) ||
-                    dist > hpr * hpr && !isNaN(lpr) && !isNaN(hpr)) {
+                dist < hpr * hpr && isNaN(lpr) ||
+                dist < lpr * lpr && !isNaN(lpr) && !isNaN(hpr) ||
+                dist > hpr * hpr && !isNaN(lpr) && !isNaN(hpr)) {
                 h_hats[idx] = new Complex(0, 0);
             }
         }
     }
 
     //store them in a nice function to match the math
-    $h = function (k, l) {
+    $h = function(k, l) {
         if (arguments.length === 0)
             return h_hats;
 
@@ -135,7 +136,7 @@ function init3() {
     invFFT(h_primes, h_hats);
 
     //store them in a nice function to match the math
-    h_ = function (n, m) {
+    h_ = function(n, m) {
         if (arguments.length === 0)
             return h_primes;
 
@@ -180,7 +181,7 @@ function init4() {
             for (var c = 0; c < 3; c++) {
                 currImageData.data[idxInPixels + c] = color[c];
             }
-            currImageData.data[idxInPixels + 3] = 255; // fullalpha		
+            currImageData.data[idxInPixels + 3] = 255; // fullalpha     
         }
     }
     ctxs.putImageData(currImageData, 0, 0);
@@ -189,6 +190,7 @@ function init4() {
 function FFT(out, sig) {
     rec_FFT(out, 0, sig, 0, sig.length, 1);
 }
+
 function rec_FFT(out, start, sig, offset, N, s) {
     if (N === 1) {
         out[start] = new Complex(sig[offset], 0); //array
@@ -210,6 +212,7 @@ function invFFT(sig, transform) {
         sig[ai] = sig[ai].real / sig.length;
     }
 }
+
 function rec_invFFT(sig, start, transform, offset, N, s) {
     if (N === 1) {
         sig[start] = transform[offset];
@@ -227,18 +230,20 @@ function rec_invFFT(sig, start, transform, offset, N, s) {
 
 function shiftFFT(transform) {
     return flipRightHalf(
-            halfShiftFFT(
-                    halfShiftFFT(transform)
-                    )
-            );
+        halfShiftFFT(
+            halfShiftFFT(transform)
+        )
+    );
 }
+
 function unshiftFFT(transform) {
     return halfShiftFFT(
-            halfShiftFFT(
-                    flipRightHalf(transform)
-                    )
-            );
+        halfShiftFFT(
+            flipRightHalf(transform)
+        )
+    );
 }
+
 function halfShiftFFT(transform) {
     var ret = [];
     var N = dims[1];
@@ -259,6 +264,7 @@ function halfShiftFFT(transform) {
     }
     return ret;
 }
+
 function flipRightHalf(transform) {
     var ret = [];
 
@@ -286,7 +292,7 @@ function cisExp(x) { //e^ix = cos x + i*sin x
 function getPixelsFromImage(location, callback) {
     var startedGettingPixels = new Date().getTime();
     var img = new Image(); //make a new image
-    img.onload = function () { //when it is finished loading
+    img.onload = function() { //when it is finished loading
         var canvas = document.createElement('canvas'); //make a canvas element
         canvas.width = img.width; //with this width
         //and this height (keep it the same as the image)
@@ -394,19 +400,19 @@ function Complex(re, im) {
     this.real = re;
     this.imag = im;
 }
-Complex.prototype.magnitude2 = function () {
+Complex.prototype.magnitude2 = function() {
     return this.real * this.real + this.imag * this.imag;
 };
-Complex.prototype.magnitude = function () {
+Complex.prototype.magnitude = function() {
     return Math.sqrt(this.magnitude2());
 };
-Complex.prototype.plus = function (z) {
+Complex.prototype.plus = function(z) {
     return new Complex(this.real + z.real, this.imag + z.imag);
 };
-Complex.prototype.minus = function (z) {
+Complex.prototype.minus = function(z) {
     return new Complex(this.real - z.real, this.imag - z.imag);
 };
-Complex.prototype.times = function (z) {
+Complex.prototype.times = function(z) {
     if (typeof z === 'object') { //complex multiplication
         var rePart = this.real * z.real - this.imag * z.imag;
         var imPart = this.real * z.imag + this.imag * z.real;
@@ -415,4 +421,3 @@ Complex.prototype.times = function (z) {
         return new Complex(z * this.real, z * this.imag);
     }
 };
-
