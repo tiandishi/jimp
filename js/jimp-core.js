@@ -908,3 +908,21 @@ function medianBlur(__src, __size1, __size2, __borderType, __dst) {
     }
     return dst;
 };
+
+
+function init_img_show(img_src){
+     var img = new Image();
+        img.onload = function () {
+            imgCanvas.height = img.height;
+            imgCanvas.width = img.width;
+            dims[0] = img.width;
+            dims[1] = img.height;
+            imgCtx.drawImage(img, 0, 0);
+            var imgdata = imgCtx.getImageData(0, 0, imgCanvas.width, imgCanvas.height);
+            var data = imgdata.data;
+            imgCtx.putImageData(imgdata, 0, 0);
+            get_img_mat(img_src);
+        };
+        img.src = img_src;
+        init_img_src = img_src;
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <canvas id="myCanvas">抱歉，您的浏览器还不支持canvas。</canvas>
+        <input type="file" id="myFile" />
+        <script>
+            var myCanvas = document.getElementById('myCanvas');
+            var myFile = document.getElementById('myFile');
+            myFile.onchange = function (event) {
+                var selectedFile = event.target.files[0];
+                var reader = new FileReader();
+                reader.onload = putImage2Canvas;
+                reader.readAsDataURL(selectedFile);
+            }
+
+
+            function putImage2Canvas(event) {
+                var img = new Image();
+                img.src = event.target.result;
+                img.onload = function () {
+                    myCanvas.width = img.width;
+                    myCanvas.height = img.height;
+                    var context = myCanvas.getContext('2d');
+                    context.drawImage(img, 0, 0);
+                    console.log(img.src);
+                    var imgdata = context.getImageData(0, 0, img.width, img.height);
+                    // 处理imgdata
+                }
+            }
+        </script>
+    </body>
+
+</html>

@@ -1,198 +1,200 @@
 <!doctype html>
 <html ng-app="jimp">
-<head>
-    <title>数字图像处理作业</title>
-    <meta charset="utf-8" />
+    <head>
+        <title>数字图像处理作业</title>
+        <meta charset="utf-8" />
 
 
-    <link rel="stylesheet" type="text/css" href="css/playground.css" />
-</head>
-<body>
+        <link rel="stylesheet" type="text/css" href="css/playground.css" />
+       
+    </head>
+    <body>
 
-    <header>
-        <h2><a href="http://github.com/tiandishi/jimp">数字图像处理</a>作业 </h2>
+        <header>
+            <h2><a href="http://github.com/tiandishi/jimp">数字图像处理</a>作业 </h2>
 
-        <span>by tiandishi</span>
-        <a href="http://tiandishi.github.io">@tiandishi</a>
+            <span>by tiandishi</span>
+            <a href="http://tiandishi.github.io">@tiandishi</a>
+        </header>	
+        <a href="http://tiandishi.github.io" class="github">Fork me on GitHub</a>
+<input type="file" id="file" onchange="" style="display:none"/> 
 
-    </header>	
-    <a href="http://tiandishi.github.io" class="github">Fork me on GitHub</a>
+        <div ng-controller="select_op">
+            
+            <div id="interaction" >
 
-    <div ng-controller="select_op">
-        <div id="interaction" >
+                <ul class="thumbnails" ng-controller="select_img">
+                    <li ng-repeat="m in imgsrc_data" ng-class="m.class" ng-click="img_selected(m)"><img src={{m.src}} width="50" height="33" alt=""></li>
+                    <li class="thumb"><img src="images/add.png" onclick="file.click()" width="50" height="33" alt="kanbudao"></li>
+                </ul>
+                <div id="filter-target">
+                    <canvas id="img_canvas"></canvas>
+                </div>
 
-            <ul class="thumbnails" ng-controller="select_img">
-                <li ng-repeat="m in imgsrc_data" ng-class="m.class" ng-click="img_selected(m)"><img src={{m.src}} width="50" height="33" alt=""></li>
-
-            </ul>
-            <div id="filter-target">
-                <canvas id="img_canvas"></canvas>
-            </div>
-
-            <label class="selector" >
-                变化:
-                <select id="filter-selector" ng-model="selected" ng-options="m.label group by m.controlId for m in operations">
-                    <option value="">请选择</option>                 
-                </select>
-
-            </label>
-
-            <div class="controls" id="controls-blur" ng-if="selected.name == 'gray_img'">
-                <label>
-                    灰度值:
-                    <input type="range" ng-model="gray_value" ng-init="gray_value = 256" ng-change="gray_img_change(gray_value)" min="1" max="256" step="1">
-                    {{gray_value}}
-                </label>
-            </div>
-
-            <div class="controls" id="controls-bitplane" ng-if="selected.name == 'bitplane'">
-                <label>
-                    位平面取值:
-                    <input type="range" ng-model="bit_value" ng-init="bit_value = 1" ng-change="bitplane_change(bit_value)" min="1" max="8" step="1">
-                    {{bit_value}}
-                </label>
-            </div>
-
-
-            <div class="controls" ng-if="selected.name == 'gray_line_change'">
-                <label>
-                    线性变换:Y=
-                    <input type="text" ng-model="line_a" ng-init="line_a =1" ng-change="line_change(line_a,line_b)">*X+<input type="text" ng-model="line_b" ng-init="line_b = 0" ng-change="line_change(line_a,line_b)">                     
-                </label>
-            </div>
-
-            <div class="controls" ng-if="selected.name == 'not_line_change'">
-                <label>
-                    <div ng-if="not_line_value==1">非线性变换:Y=X+(0.8*X*(255-X))/255
-                    </div>
-                    <div ng-if="not_line_value==2">非线性变换:Y=X*X/255
-                    </div>
-
-                    <input type="radio" ng-click="not_line_change(1)" ng-model="not_line_value" value="1"/> 第一种
-                    <input type="radio" ng-click="not_line_change(2)" ng-model="not_line_value" value="2"/> 二阶点运算
+                <label class="selector" >
+                    变化:
+                    <select id="filter-selector" ng-model="selected" ng-options="m.label group by m.controlId for m in operations">
+                        <option value="">请选择</option>                 
+                    </select>
 
                 </label>
+
+                <div class="controls" id="controls-blur" ng-if="selected.name == 'gray_img'">
+                    <label>
+                        灰度值:
+                        <input type="range" ng-model="gray_value" ng-init="gray_value = 256" ng-change="gray_img_change(gray_value)" min="1" max="256" step="1">
+                        {{gray_value}}
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-bitplane" ng-if="selected.name == 'bitplane'">
+                    <label>
+                        位平面取值:
+                        <input type="range" ng-model="bit_value" ng-init="bit_value = 1" ng-change="bitplane_change(bit_value)" min="1" max="8" step="1">
+                        {{bit_value}}
+                    </label>
+                </div>
+
+
+                <div class="controls" ng-if="selected.name == 'gray_line_change'">
+                    <label>
+                        线性变换:Y=
+                        <input type="text" ng-model="line_a" ng-init="line_a = 1" ng-change="line_change(line_a, line_b)">*X+<input type="text" ng-model="line_b" ng-init="line_b = 0" ng-change="line_change(line_a, line_b)">                     
+                    </label>
+                </div>
+
+                <div class="controls" ng-if="selected.name == 'not_line_change'">
+                    <label>
+                        <div ng-if="not_line_value == 1">非线性变换:Y=X+(0.8*X*(255-X))/255
+                        </div>
+                        <div ng-if="not_line_value == 2">非线性变换:Y=X*X/255
+                        </div>
+
+                        <input type="radio" ng-click="not_line_change(1)" ng-model="not_line_value" value="1"/> 第一种
+                        <input type="radio" ng-click="not_line_change(2)" ng-model="not_line_value" value="2"/> 二阶点运算
+
+                    </label>
+                </div>
+
+                <div class="controls" ng-if="selected.name == 'yuzhitu'">
+                    <label>
+                        阈值:
+                        <input type="range" ng-model="yuzhi_value" ng-change="yuzhi_change(yuzhi_value)" min="0" max="255" step="1">
+                        {{yuzhi_value}}
+                    </label>
+                </div>
+                <div class="controls" id="controls-edges" ng-if="selected.name == 'edges'">
+                    <label>
+                        值:
+                        <input type="range" name="data-pb-edges-amount" min="0" max="1" step="0.01" value="1">
+                    </label>
+                </div>
+                <div class="controls" id="controls-edges" ng-if="selected.name == 'fly_bh'">
+
+                    <label>
+                        变换类型
+                        <input type="radio" ng-click="fly_bh(0, 255, 1)" ng-model="fly_type" value="1"/> 原图
+                        <input type="radio" ng-click="fly_bh(0, 255, 2)" ng-model="fly_type" value="2"/> DFT 
+                        <input type="radio" ng-click="fly_bh(0, 255, 3)" ng-model="fly_type" value="3"/> 重构
+                        <input type="radio" ng-click="fly_bh(0, 255, 4)" ng-model="fly_type" value="4"/> 差异
+                        <div ng-if="fly_type == 2"> 低通频
+                            <input  ng-model="ltp" ng-change="fly_bh(ltp, htp, 2)" />高通频
+                            <input  ng-model="htp" ng-change="fly_bh(ltp, htp, 2)" />
+                        </div>
+                    </label>
+                </div>
+
+
+                <div class="controls" id="controls-grayscale" ng-if="selected.name == 'blur'">
+                    <label>
+                        种类:
+                        <input type="radio" ng-click="blur_change(1)" ng-model="pinghua_type" value="1"/> 均值平滑
+                        <input type="radio" ng-click="blur_change(2)" ng-model="pinghua_type" value="2"/> 高斯平滑
+                        <input type="radio" ng-click="blur_change(3)" ng-model="pinghua_type" value="3"/> 中值平滑
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-grayscale" ng-if="selected.name == 'grayscale'">
+                    <label>
+                        Opacity:
+                        <input type="range" name="data-pb-grayscale-opacity" min="0" max="1" step="0.01" value="1">
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-mosaic" ng-if="selected.name == 'mosaic'">
+                    <label>
+                        Opacity:
+                        <input type="range" name="data-pb-mosaic-opacity" min="0" max="1" step="0.01" value="1">
+                    </label>
+                    <label>
+                        Size:
+                        <input type="range" name="data-pb-mosaic-size" min="1" max="40" step="1" value="5">
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-noise" ng-if="selected.name == 'noise'">
+                    <label>
+                        值:
+                        <input type="range" name="data-pb-noise-amount" min="0" max="100" step="1" value="30">
+                    </label>
+                    <label>
+                        Type:
+                        <input type="radio" name="data-pb-noise-type" value="mono"> Mono
+                        <input type="radio" name="data-pb-noise-type" value="colour"> Colour
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-posterize" ng-if="selected.name == 'posterize'">
+                    <label>
+                        值:
+                        <input type="range" name="data-pb-posterize-amount" min="2" max="100" step="1" value="5">
+                    </label>
+                    <label>
+                        Opacity:
+                        <input type="range" name="data-pb-posterize-opacity" min="0" max="1" step="0.01" value="1">
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-sepia" ng-if="selected.name == 'sepia'">
+                    <label>
+                        Opacity:
+                        <input type="range" name="data-pb-sepia-opacity" min="0" max="1" step="0.01" value="0.5">
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-sharpen" ng-if="selected.name == 'sharpen'">
+                    <label>
+                        值:
+                        <input type="range" name="data-pb-sharpen-amount" min="0" max="1" step="0.01" value="0.2">
+                    </label>
+                </div>
+
+                <div class="controls" id="controls-tint" ng-if="selected.name == 'tint'">
+                    <label>
+                        颜色:
+                        <input type="text" name="data-pb-tint-color" value="#FF0000">
+                    </label>
+                    <label>
+                        Opacity:
+
+                    </label>
+                </div>
+
             </div>
 
-            <div class="controls" ng-if="selected.name == 'yuzhitu'">
-                <label>
-                    阈值:
-                    <input type="range" ng-model="yuzhi_value" ng-change="yuzhi_change(yuzhi_value)" min="0" max="255" step="1">
-                    {{yuzhi_value}}
-                </label>
+            <div id="interaction" ng-if="selected.controlId == '黑白变换'">
+                <div id="zhifangtu" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
             </div>
-            <div class="controls" id="controls-edges" ng-if="selected.name == 'edges'">
-                <label>
-                    值:
-                    <input type="range" name="data-pb-edges-amount" min="0" max="1" step="0.01" value="1">
-                </label>
-            </div>
-            <div class="controls" id="controls-edges" ng-if="selected.name == 'fly_bh'">
-
-                <label>
-                    变换类型
-                    <input type="radio" ng-click="fly_bh(0,255,1)" ng-model="fly_type" value="1"/> 原图
-                    <input type="radio" ng-click="fly_bh(0,255,2)" ng-model="fly_type" value="2"/> DFT 
-                    <input type="radio" ng-click="fly_bh(0,255,3)" ng-model="fly_type" value="3"/> 重构
-                    <input type="radio" ng-click="fly_bh(0,255,4)" ng-model="fly_type" value="4"/> 差异
-                    <div ng-if="fly_type==2"> 低通频
-                      <input  ng-model="ltp" ng-change="fly_bh(ltp,htp,2)" />高通频
-                      <input  ng-model="htp" ng-change="fly_bh(ltp,htp,2)" />
-                  </div>
-              </label>
-          </div>
-
-
-          <div class="controls" id="controls-grayscale" ng-if="selected.name == 'blur'">
-            <label>
-                种类:
-                <input type="radio" ng-click="blur_change(1)" ng-model="pinghua_type" value="1"/> 均值平滑
-                <input type="radio" ng-click="blur_change(2)" ng-model="pinghua_type" value="2"/> 高斯平滑
-                <input type="radio" ng-click="blur_change(3)" ng-model="pinghua_type" value="3"/> 中值平滑
-            </label>
         </div>
+        <footer>
 
-        <div class="controls" id="controls-grayscale" ng-if="selected.name == 'grayscale'">
-            <label>
-                Opacity:
-                <input type="range" name="data-pb-grayscale-opacity" min="0" max="1" step="0.01" value="1">
-            </label>
-        </div>
+        </footer>
 
-        <div class="controls" id="controls-mosaic" ng-if="selected.name == 'mosaic'">
-            <label>
-                Opacity:
-                <input type="range" name="data-pb-mosaic-opacity" min="0" max="1" step="0.01" value="1">
-            </label>
-            <label>
-                Size:
-                <input type="range" name="data-pb-mosaic-size" min="1" max="40" step="1" value="5">
-            </label>
-        </div>
-
-        <div class="controls" id="controls-noise" ng-if="selected.name == 'noise'">
-            <label>
-                值:
-                <input type="range" name="data-pb-noise-amount" min="0" max="100" step="1" value="30">
-            </label>
-            <label>
-                Type:
-                <input type="radio" name="data-pb-noise-type" value="mono"> Mono
-                <input type="radio" name="data-pb-noise-type" value="colour"> Colour
-            </label>
-        </div>
-
-        <div class="controls" id="controls-posterize" ng-if="selected.name == 'posterize'">
-            <label>
-                值:
-                <input type="range" name="data-pb-posterize-amount" min="2" max="100" step="1" value="5">
-            </label>
-            <label>
-                Opacity:
-                <input type="range" name="data-pb-posterize-opacity" min="0" max="1" step="0.01" value="1">
-            </label>
-        </div>
-
-        <div class="controls" id="controls-sepia" ng-if="selected.name == 'sepia'">
-            <label>
-                Opacity:
-                <input type="range" name="data-pb-sepia-opacity" min="0" max="1" step="0.01" value="0.5">
-            </label>
-        </div>
-
-        <div class="controls" id="controls-sharpen" ng-if="selected.name == 'sharpen'">
-            <label>
-                值:
-                <input type="range" name="data-pb-sharpen-amount" min="0" max="1" step="0.01" value="0.2">
-            </label>
-        </div>
-
-        <div class="controls" id="controls-tint" ng-if="selected.name == 'tint'">
-            <label>
-                颜色:
-                <input type="text" name="data-pb-tint-color" value="#FF0000">
-            </label>
-            <label>
-                Opacity:
-
-            </label>
-        </div>
-
-    </div>
-
-    <div id="interaction" ng-if="selected.controlId == '黑白变换'">
-        <div id="zhifangtu" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
-    </div>
-</div>
-<footer>
-
-</footer>
-
-<script src="js/echarts.js"></script>
-<script src="bower_components/angular/angular.min.js"></script>
-<script src="bower_components/angular-route/angular-route.min.js"></script>
-<script src="js/jimp-core.js"></script>
-<script src="js/jimp.js"></script>   
-<script src="js/fourierimage.js"></script>   
-</body> 
+        <script src="js/echarts.js"></script>
+        <script src="bower_components/angular/angular.min.js"></script>
+        <script src="bower_components/angular-route/angular-route.min.js"></script>
+        <script src="js/jimp-core.js"></script>
+        <script src="js/jimp.js"></script>   
+        <script src="js/fourierimage.js"></script>   
+    </body> 
 </html>
