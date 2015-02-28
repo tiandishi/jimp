@@ -164,8 +164,10 @@
 
                 <div class="controls" id="controls-sharpen" ng-if="selected.name == 'sharpen'">
                     <label>
-                        值:
-                        <input type="range" name="data-pb-sharpen-amount" min="0" max="1" step="0.01" value="0.2">
+                        算子:
+                        <input type="radio" ng-click="blur_change(1)" ng-model="pinghua_type" value="1"/> Roberts
+                        <input type="radio" ng-click="blur_change(2)" ng-model="pinghua_type" value="2"/> Sobel
+                        <input type="radio" ng-click="blur_change(3)" ng-model="pinghua_type" value="3"/> 拉普拉斯
                     </label>
                 </div>
 
