@@ -158,20 +158,28 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
             if (type_value == 1) {
                 var dstMat = junzhi_blur(init_matrix, 3, 3, CV_BORDER_CONSTANT);
                 mat2imgshow(dstMat, imgCanvas, imgCtx);
-                // var zdtdata = get_zft_data256(dstMat);
-                // sczft(zdtdata.data1, zdtdata.data2);
             } else if (type_value == 2) {
                 var dstMat = GaussianBlur(init_matrix, 3, 3, 0, 0, CV_BORDER_CONSTANT);
                 mat2imgshow(dstMat, imgCanvas, imgCtx);
-                //  var zdtdata = get_zft_data256(dstMat);
-                //  sczft(zdtdata.data1, zdtdata.data2);
             } else if (type_value == 3) {
                 var dstMat = medianBlur(init_matrix, 3, 3, CV_BORDER_CONSTANT);
                 mat2imgshow(dstMat, imgCanvas, imgCtx);
-                //   var zdtdata = get_zft_data256(dstMat);
-                //   sczft(zdtdata.data1, zdtdata.data2);
             }
 
+        };
+        $scope.sharpen_change = function (type_value) {
+            if (type_value == 'sobel') {
+                var dstMat = sharpen_sobel(init_matrix);
+                mat2imgshow(dstMat, imgCanvas, imgCtx);
+            } else if (type_value == 'roberts') {
+                var matrix = new Array(-1,0,1,-2,0,2,-1,0,1);
+                var dstMat = sharpen_roberts(init_matrix);
+                mat2imgshow(dstMat, imgCanvas, imgCtx);
+            } else if (type_value == 'laplace') {
+                var matrix = new Array(-1,0,1,-2,0,2,-1,0,1);
+                var dstMat = applyMatrix(init_matrix,matrix);
+                mat2imgshow(dstMat, imgCanvas, imgCtx);
+            }
         };
         $scope.fly_bh = function (a, b, value) {
             var pra = parseInt(a);

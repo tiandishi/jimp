@@ -23,6 +23,7 @@ function Mat(__row, __col, __data, __buffer) {
     this.type = "CV_RGBA";
 }
 
+
 function imread(__image) {
         var width = __image.width,
             height = __image.height;
@@ -392,6 +393,8 @@ function applyMatrix(__src, matrix) {
         __src = color2gray(init_matrix, 256);
     var row = __src.row,
         col = __src.col;
+    var bufferedData=__src.data;
+    var dst = new Mat(row,col);
     var matrixSize = Math.sqrt(matrix.length);
     for (var i = 1; i < col - 1; i++) {
         for (var j = 1; j < row - 1; j++) {
@@ -404,7 +407,7 @@ function applyMatrix(__src, matrix) {
                 for (var w = 0; w < matrixSize; w++) {
 
                     // get a refence to a pixel position in the matrix
-                    var r = convertCoordinates(i + h - 1, j + w - 1, imgWidth) << 2;
+                    var r = convertCoordinates(i + h - 1, j + w - 1, col) << 2;
 
                     // find RGB values for that pixel
                     var currentPixel = {
@@ -421,21 +424,17 @@ function applyMatrix(__src, matrix) {
             }
 
             // get a reference for the final pixel
-            var ref = convertCoordinates(i, j, imgWidth) << 2;
-            var thisPixel = {
-                r: data[ref],
-                g: data[ref + 1],
-                b: data[ref + 2]
-            };
+            var ref = convertCoordinates(i, j, col) << 2;
 
-            // finally, apply the adjusted values
-            data = setRGB(data, ref,
-                findColorDifference(amount, sumR, thisPixel.r),
-                findColorDifference(amount, sumG, thisPixel.g),
-                findColorDifference(amount, sumB, thisPixel.b));
+            dst.data[ref]=sumR;
+            dst.data[ref+1]=sumG;
+            dst.data[ref+2]=sumB;
+            dst.data[ref+3]=255;
         }
     }
+    return dst;
 }
+
 
 function convertCoordinates(x, y, w) {
     return x + (y * w);
@@ -461,7 +460,6 @@ function mat2array(__src) {
     var pix = 0;
 
     while (pix < count) {
-
         var aa = data2[pix];
         res.data.push(aa);
         pix += 4;
@@ -556,9 +554,108 @@ function sct() {
         return h_hats[idx];
     };
 
-
 }
 
+function sharpen_sobel(__src){
+    if (__src == null)
+        __src = color2gray(init_matrix, 256);
+    var row = __src.row,
+        col = __src.col;
+    var dst=new Mat(row,col);
+    var matrix1=new Array(-1,0,1,-2,0,2,-1,0,1);
+    var matrix2=new Array(-1,-2,-1,0,0,0,1,2,1);
+    var tmp1 = applyMatrix(init_matrix,matrix1);
+    var tmp2 = applyMatrix(init_matrix,matrix2);
+
+    for (var i = 1; i < col - 1; i++) {
+        for (var j = 1; j < row - 1; j++) {
+            var r = convertCoordinates(i, j, col) << 2;
+            dst.data[r]=Math.sqrt(tmp1.data[r]*tmp1.data[r]+tmp2.data[r]*tmp2.data[r]);
+            dst.data[r+1]=Math.sqrt(tmp1.data[r+1]*tmp1.data[r+1]+tmp2.data[r+1]*tmp2.data[r+1]);
+            dst.data[r+2]=Math.sqrt(tmp1.data[r+2]*tmp1.data[r+2]+tmp2.data[r+2]*tmp2.data[r+2]);
+            dst.data[r+3]=255;
+        }
+    }
+    return dst;
+}
+
+function sharpen_roberts(__src){
+    if (__src == null)
+        __src = color2gray(init_matrix, 256);
+    var row = __src.row,
+        col = __src.col;
+    var bufferedData=__src.data;
+    var dst = new Mat(row, col);
+    for (var i = 1; i < col - 1; i++) {
+        for (var j = 1; j < row - 1; j++) {
+
+            // temporary holders for matrix results
+            var sumR = sumG = sumB = 0;
+
+
+            var r = convertCoordinates(i, j, col) << 2;
+            var r_right=convertCoordinates(i+1, j, col) << 2;
+            var r_down=convertCoordinates(i, j+1, col) << 2;
+            var r_down_right=convertCoordinates(i+1, j+1, col) << 2;
+
+
+
+                    // find RGB values for that pixel
+                    var currentPixel = {
+                        r: bufferedData[r],
+                        g: bufferedData[r + 1],
+                        b: bufferedData[r + 2]
+                    };
+
+                    var currentPixel_right = {
+                        r: bufferedData[r_right],
+                        g: bufferedData[r_right + 1],
+                        b: bufferedData[r_right + 2]
+                    };
+
+                    var currentPixel_down = {
+                        r: bufferedData[r_down],
+                        g: bufferedData[r_down + 1],
+                        b: bufferedData[r_down + 2]
+                    };
+
+                    var currentPixel_down_right = {
+                        r: bufferedData[r_down_right],
+                        g: bufferedData[r_down_right + 1],
+                        b: bufferedData[r_down_right + 2]
+                    };
+
+                    var tmp1=pixel_minus(currentPixel,currentPixel_down_right);
+                    var tmp2=pixel_minus(currentPixel_right,currentPixel_down);
+
+           
+            dst.data[r]=tmp1[0]+tmp2[0];
+            dst.data[r+1]=tmp1[1]+tmp2[1];
+            dst.data[r+2]=tmp1[2]+tmp2[2];
+            dst.data[r+3]=255;
+
+        }
+    }
+    return dst;
+}
+
+function pixel_add(a,b){
+    var res=new Array(4);
+    res[0]=a.r+b.r;
+    res[1]=a.g+b.g;
+    res[2]=a.b+b.b;
+    res[3]=255;
+    return res;
+}
+
+function pixel_minus(a,b){
+    var res=new Array(4);
+    res[0]=Math.abs(a.r-b.r);
+    res[1]=Math.abs(a.g-b.g);
+    res[2]=Math.abs(a.b-b.b);
+    res[3]=255;
+    return res;
+}
 
 
 function junzhi_blur(__src, __size1, __size2, __borderType) {
@@ -902,13 +999,11 @@ function medianBlur(__src, __size1, __size2, __borderType, __dst) {
                 dstData[(j + offsetI) * 4 + 3] = mData[offsetY + startY * mWidth * 4 + (j + startX) * 4 + 3];
             }
         }
-
     } else {
         console.error("类型不支持");
     }
     return dst;
 };
-
 
 function init_img_show(img_src){
      var img = new Image();

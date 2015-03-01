@@ -104,7 +104,6 @@
                     </label>
                 </div>
 
-
                 <div class="controls" id="controls-grayscale" ng-if="selected.name == 'blur'">
                     <label>
                         种类:
@@ -165,9 +164,9 @@
                 <div class="controls" id="controls-sharpen" ng-if="selected.name == 'sharpen'">
                     <label>
                         算子:
-                        <input type="radio" ng-click="blur_change(1)" ng-model="pinghua_type" value="1"/> Roberts
-                        <input type="radio" ng-click="blur_change(2)" ng-model="pinghua_type" value="2"/> Sobel
-                        <input type="radio" ng-click="blur_change(3)" ng-model="pinghua_type" value="3"/> 拉普拉斯
+                        <input type="radio" ng-click="sharpen_change('roberts')" ng-model="sharpen_type" value="roberts"/> Roberts
+                        <input type="radio" ng-click="sharpen_change('sobel')" ng-model="sharpen_type" value="sobel"/> Sobel
+                        <input type="radio" ng-click="sharpen_change('laplace')" ng-model="sharpen_type" value="laplace"/> 拉普拉斯
                     </label>
                 </div>
 
