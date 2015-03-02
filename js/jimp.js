@@ -180,6 +180,11 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
                 var dstMat = applyMatrix(init_matrix,matrix);
                 mat2imgshow(dstMat, imgCanvas, imgCtx);
             }
+            else if (type_value == 'marr') {
+                var matrix = new Array(0,0,-1,0,0,0,-1,-2,-1,0,-1,-2,16,-2,-1,0,-1,-2,-1,0,0,0,-1,0,0);
+                var dstMat = applyMatrix(init_matrix,matrix);
+                mat2imgshow(dstMat, imgCanvas, imgCtx);
+            }
         };
         $scope.fly_bh = function (a, b, value) {
             var pra = parseInt(a);
@@ -192,12 +197,6 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
                 init3();
             if (value == 4)
                 init4();
-            //   var aa = parseFloat(line_a) || 1;
-            // var bb = parseFloat(line_b) || 0;
-            //  var dstMat = gray2line_change(gray_matrix, aa, bb);
-            //  mat2imgshow(dstMat, imgCanvas, imgCtx);
-            //  var zdtdata = get_zft_data256(dstMat);
-            //  sczft(zdtdata.data1, zdtdata.data2);
         };
 
     }]);

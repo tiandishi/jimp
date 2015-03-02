@@ -396,8 +396,9 @@ function applyMatrix(__src, matrix) {
     var bufferedData=__src.data;
     var dst = new Mat(row,col);
     var matrixSize = Math.sqrt(matrix.length);
-    for (var i = 1; i < col - 1; i++) {
-        for (var j = 1; j < row - 1; j++) {
+    var by=Math.floor(matrixSize/2);
+    for (var i = by; i < col - by; i++) {
+        for (var j = by; j < row - by; j++) {
 
             // temporary holders for matrix results
             var sumR = sumG = sumB = 0;
@@ -407,7 +408,7 @@ function applyMatrix(__src, matrix) {
                 for (var w = 0; w < matrixSize; w++) {
 
                     // get a refence to a pixel position in the matrix
-                    var r = convertCoordinates(i + h - 1, j + w - 1, col) << 2;
+                    var r = convertCoordinates(i + h - by, j + w - by, col) << 2;
 
                     // find RGB values for that pixel
                     var currentPixel = {
