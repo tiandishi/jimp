@@ -176,7 +176,7 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
                 var dstMat = sharpen_roberts(init_matrix);
                 mat2imgshow(dstMat, imgCanvas, imgCtx);
             } else if (type_value == 'laplace') {
-                var matrix = new Array(-1,0,1,-2,0,2,-1,0,1);
+                var matrix = new Array(1,1,1,1,-8,1,1,1,1);
                 var dstMat = applyMatrix(init_matrix,matrix);
                 mat2imgshow(dstMat, imgCanvas, imgCtx);
             }
