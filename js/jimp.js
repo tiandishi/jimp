@@ -185,6 +185,11 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
                 var dstMat = applyMatrix(init_matrix,matrix);
                 mat2imgshow(dstMat, imgCanvas, imgCtx);
             }
+            else if(type_value == "canny")
+            {
+                var dstMat=canny_edge(gray_matrix,0.80, 0.55);
+                mat2imgshow(dstMat, imgCanvas, imgCtx);
+            }
         };
         $scope.fly_bh = function (a, b, value) {
             var pra = parseInt(a);
