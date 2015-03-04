@@ -154,10 +154,12 @@
                     </label>
                 </div>
 
-                <div class="controls" id="controls-sepia" ng-if="selected.name == 'sepia'">
+                <div class="controls" id="controls-huogh" ng-if="selected.name == 'hough'">
                     <label>
-                        Opacity:
-                        <input type="range" name="data-pb-sepia-opacity" min="0" max="1" step="0.01" value="0.5">
+                        检测类型:
+                        <input type="radio" ng-click="hough_detecte('line')" ng-model="detect_type" value="line"/> 直线
+
+                        <input type="radio" ng-click="hough_detecte('circle')" ng-model="detect_type" value="circle"/> 圆
                     </label>
                 </div>
 

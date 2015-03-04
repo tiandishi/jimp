@@ -115,6 +115,11 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
                 label: "锐化",
                 filterClass: "filter-sharpen",
                 controlId: "彩色变换"
+            },{
+                name: "hough",
+                label: "霍夫变换",
+                filterClass: "filter-hough",
+                controlId: "其他变换"
             }];
         $scope.not_line_change = function (value) {
             var vv = parseInt(value) || 1;
@@ -203,7 +208,9 @@ jimp.controller('select_op', ['$scope', function ($scope, $location) {
             if (value == 4)
                 init4();
         };
-
+        $scope.hough_detecte = function(type){
+            alert(type);
+        }
     }]);
 
 
